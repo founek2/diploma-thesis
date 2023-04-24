@@ -11,12 +11,21 @@ Jedná se čistě o nastřelený návrh.
 1. Analýza monolitu
     1. snažší návrh, rychlejší vývoj
     2. problém škálovatelnosti a provázanosti
+    3. ACID
 2. Microservices
     1. složitý návrh ale dobrá škálovatelnost by design
     2. velké množství potřebných technologií pro spuštění jednoduché aplikace
     3. všichni dnes chtějí microservice, ale je složité je dobře navrhnout a často přinášení více problémů než užitku - minimálně pro malé/středně velké projekty
-3. Modulární monolyt
+    4. Složitost distribuovaných transakcí
+3. Dev methology
+    1. Slightly touching Agile, since it closely relates with fast iterative changes and influences style of development
+4. Modulární monolyt
     1. Monolyt s kvalitním designem a modulární architekturou může být mnohem jednodušší na vývoj a v případě nutnosti s trochou snahy umožňuje rozdělení na více služeb a díky tomu škálovat.
-4. Návrh modulárního monolytu a microservice architektury
-5. Porovnání potřebných technologií pro produkční deploy, cena zdrojů, využití paměti/cpu, škálovatelnost (otázka do jaké míry je tato vlastnost na drtivou většinou úloh na dnešním HW)
-6. Aplikace zvoleného přístupu na mojí IoT Platformu a provedení měření, zjištění chování při velkém množství zařízení -> objevení nejvytíženější částí a extrakce do samotné služby a naškálování?
+5. Návrh modulárního monolytu a microservice architektury
+6. Porovnání potřebných technologií pro produkční deploy, cena zdrojů, využití paměti/cpu, škálovatelnost (otázka do jaké míry je tato vlastnost potřeba na drtivou většinou úloh na dnešním HW)
+
+7. ~~Aplikace zvoleného přístupu na mojí IoT Platformu a provedení měření, zjištění chování při velkém množství zařízení -> objevení nejvytíženější částí a extrakce do samotné služby a naškálování?~~
+
+### Nápady
+
+-   návrh jednoduché aplikace pro všechny tři architektury na které budou dobře vidět praktické rozdíly - api, objedávka, platba, sklad
