@@ -1,0 +1,67 @@
+# Motivace
+
+Dlouho jsem přemýšlel nad tématem MicroServis, protože se o jich všude mluví a každý je chce. Ovšem z praxe dostávám spíše pocit, že se tato architektura využívá až moc - zesložitěje zbytečně vývoj, tak vysoká granularita škálovatelnosti s dnešním výkonem není potřeba. Mluvím hlavně o malých až středních projektech, kde nejsou prostředky aby každé 2 micro služby měli za sebou tým vývojářu. Pak to dopadá tak, že je 20 microslužeb, 15 repozitářů 1 vývojář který se o vše má starat. Stejně tak prostředí pro běh, které je potřeba udržovat s desítkami různých technologií - např. udržovat klustr Kubernetes není vůbec jednoduché a vyžaduje velké znalosti -> s tím se komplikuje i samostatný vývoj pro vývojáře, protože musí mít celý komplexní prostředí lokálně pro efektivní vývoj. Také Debugging je poměrně velká výzva oproti Monolitické aplikaci.
+
+# Téma diplomové práce
+
+V rámci diplomové práce bych se chtěl zaměřit na dnes až nadužívanou architekturu MicroService, porovnat ji s architekturou klasického Monolitu a následně se podívat na architekturu modulárního monolitu označovaného někdy jako Modulith. Věnovat se budu architektuře pro malé až střední projekty, kde podle mého názoru využití MicroService architury zbytečně prodražuje a zesložiťuje vývoj aniž by to přineslo významný přinos pro projekt.
+
+Microservice architektura vznikla v roce 2012 a velmi rychle se rozšířila do nejrůžnějších druhé SW. Dnes je již tak populární, že při návrhu nového backendu se téměř nikdo nerozmýšlí nad vhodnou architekturou, ale vše vzniká jako MicroServices. Výhody této architekturou jsou značné a mezi největší patří: škálovatelnost a technology agnostic. Bohužel se mi zdá, že již málo kdo si uvědomuje (připouští), že tato architektura jako všechny má i své negativní vlastnosti mezi něž patří např. maintenance costs and big complexity a při návrhu pro daný projekt by se měli brát v potaz všechny vlastnosti a ne pouze automaticky slepě následovat trend MicroServices a vysoké škálovatelnosti. Toto je samozřejmně v mnoha případech opodstatěné a může být tou správnou volbou, ale to platí pro velké projekty, které mají opravdu vysoký počet uživatelů.
+
+<!-- S dnešním HW již není problém mít server v konfiguraci 64 jader CPU a 0.5 TB ram, který by měl zvládnout bez větších problému libovolně složitou aplikace. -->
+
+## Monolit
+
+V první části práci bych se chtěl blíže podívat na klasický monolit a trochu poodkrýt představu monolitu, kterou většina lidí má: že se jedná o obrovských moloch, napsaný v Javě s množstvím závislostí, ve kterých se nikdo nevyzná a každý se bojí udělat v kódu jakoukoli změnu. Takto by samozřejmně architektura monolitu vypadat neměla. Chtěl bych tedy analyzovat architekturu Monolitu a ukázat, že některé negativní vlasti nevychájí striktně z architektury Monolitu jako takové, ale spíše ze špatného návrhu konkrétního SW - velkou nevýhodu vidím v tom, že Monolith nechává velkou volnost v návrhu a sám nevynucuje velkou míru oddělení (což se ukázalo jako nedílná součast udržitelné architektury) jako v případě např. MicroService, kde rozdělení odpovědnosti je přímo základním prvkem architektury. Tedy mnohem více rozhodnutí a volnosti zůstává v rukách SW architekta a ne vždy toto může dopadnou dobře.
+
+Výhody:
+
+-   Simplicity of development
+-   Simplicity of debugging
+-   Simplicity of deployment (one deployement unit)
+-   Low cost in the early stages of the application
+-   ACID
+
+> Zde chci zdůraznit násobně rychlejší vývoj v raných fázích, mnohem nižší počet potřebných technologií a s tím související nižší náklady.
+
+Nevýhody:
+
+-   Slow speed of development - slower CI/CD, coordination of feature development and parallel work
+-   High code coupling
+-   Code ownership cannot be used
+-   Performance issues
+-   The cost of infrastructure
+-   Lack of flexibility - tight to the technologies that are used inside your monolith
+
+> Zde bych se chtěl více věnovat otázce výkonu a škálovatelnosti, protože to je dnes bráno jako největší negativum této architektury. V tomto ohlednu se vyvinuli různé přístupy a druhy aplikačních serverů, které se snažily tento problém řešit.
+
+## Microservices
+
+Dnes hojně využívaná architektura, která přinesla revoluci do způsobu jak se dnes navrhují a píší aplikace, jejímž cílem bylo vyřešit nejbolestsivější problém Monolitickým aplikací kolem škálovatelnosti a udržitelnosti velkých aplikací. O pozitivních vlastností této architektury toho bylo napsáno mnoho, ale já bych se chtěl zaměřit více na ty negativní (stinné stránky):
+
+-   škálovatelnost - na první pohled to vypadá, že při použití této architektury bude každá aplikace libovolně škálovat a vše bude skvělé. Ovšem extrémně záleží na tom, jak jsou dané služby napsané. Do jisté míry to pravda je - při špatně napsané službě sice lze aplikaci také naškálovat a zvýšit rychlost např. rozdělit zpracování na 10 instancí, ovšem nemusí dojít ke znatelnému zrychlení protože bottleneck se přenuse jinam např. na databázi, protože aplikace vytváří příliš mnoho spojení.
+-   fault isolation - v případě monolitu chyba v jedné komponentě znamená často selhání celku. U mikroslužeb by služby měli být nezávislé a chyba v jedné by neměla ovlivnit funkčnosti ostatních. To je ovšem opět závislé na konkrátní implementaci a je velmi snadné vytvořit MicroServices, které jsou na sobě zcela závislé a aplikační chyba v jedné způsobí problém v ostatních.
+-   Program language and technology agnostic - volnost používat různé jazyky pro řešení problémů pro které se hodí je skvělá vlastnost. Ovšem toto přináší komplexitu, kdy vývojáři při úpravě služeb musejí znát dané jazyky a často různé jazyky používají ruzná paradigmata, takže opět vyšší nároky. Je tedy důležité mít velmi dobrý důvod toto využít.
+-   Simpler to deploy - lze nasazovat nové verze služeb nezávisle na sobě. Toto je velmi dobrá vlastnost, která ale opět přináší vyšší komplexitu v psaní služeb. Je zde vyžadována maximální kompatibilita rozhraní, rozšiřovat je lze poměrně snadno ovšem problém je v odebírání funkcionalit - jak dlouho držet zpětnou kompatibilitu? Jak sledovat zda některá jiná služba dané rozhraní ještě využívá nebo jej lze bezpečně odstranit? Toto vyžaduje velkou obezřetnost a může vést k tomu, že ze strachu raději nic neodebíráme a budeme jenom rozšiřovat, což povede k udržování funkcí, které jsou naprosto zbytečné a nevyužité.
+-   Complexity - Asi nejvíce používaným orchestrátorem je dnes Kubernetes. Ovšem jenom nasazení a provoz Kubernetes prostředí vyžaduje obrovské znalosti. Sice lze využít služby as a service, ale ne všem problémům se lze tímto způsobem vyhnout. Debugging v MicroServices prostředí je poměrně velká výzva. Tím, že služby běží na klusteru uzlů, tak veškerá komunikace mezi nimi nyní přidává novou komplexitu, která v Monolitu, který běží na jednom serveru nikdy nebyla - nespolehlivost komunikace, protože síť negarantuje spolehlivost, zatímco komunikace mezi procesy v rámci jednoho OS ano.
+-   Distributed transactions - complexity
+
+## Modulith
+
+Vývoj Monolitu za dekády velmi pokročil a vyvinuli se modernější přístupy, které integrují nové poznatky z MicroService světa. Tato architektura by měla průnikem pozitivních vlastností Monolitu (rychlý vývoj, jednoduché nasazení, ACID) a z MicroServices se ukázala jako enormně důležitá vlastnost low coupling pro maintanable code. Částí kódu by měli být rozděleny do komponent, které by neměli mít mezi sebou závislost případně velmi minimální. Díky tomu by mělo být možné v budoucnu komponenty dle potřeby vyčlenit do mikroslužeb a ty škálovat.
+
+### Návrh nového SW
+
+Tato architektura by mohla být novým standardem co volit pro rychlý vývoj a přitom si zachovat možnost kdykoli přejít poměrně pohodlně na MicroServices.
+
+### Monolith to Modulith
+
+Vytvoření postupu jak existující Monolit "učesat" a rozčlenit do komponent.
+
+### MicroService to Modulith
+
+Postup jak snížit počet mikro-služeb při zachování low-coupling. Výsledek by byl hybrid, kdy z mikro služeb by se stali větší služby, kde každá by měla Modulith architekturu pohlcením více mikroslužeb do jedné. Důležitým faktorem je zde správná identifikace kdy se pro tento krok rozhodnout.
+
+# Praxe
+
+Pracuji půl roku ve společnosti, kde máme architekturu Microservices s 20 mikroslužbami, vyvíjeno 3 roky, napsáno v Rustu, a plánuji ji použít v rámci práce jako ukázku jak se to nemá dělat. Obrovská provázanost/závislost služeb. Nic jako distribuované transakce nepoužívají - chyba znamená ruční hledání příčiny a nápravu. Spousta mikroslužeb a pouze 2 vyvojáři. Odebírání funkcí z rozhraní je čistě na vývojáří aby věděl že nic potenciálně nerozbije. Nulový monitoring u služeb jaké všechny rozhraní z ostatních služeb volá a závisí tak na nich.
