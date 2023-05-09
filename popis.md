@@ -50,6 +50,8 @@ Dnes hojně využívaná architektura, která přinesla revoluci do způsobu jak
 
 Vývoj Monolitu za dekády velmi pokročil a vyvinuli se modernější přístupy, které integrují nové poznatky z MicroService světa. Tato architektura by měla průnikem pozitivních vlastností Monolitu (rychlý vývoj, jednoduché nasazení, ACID) a z MicroServices se ukázala jako enormně důležitá vlastnost low coupling pro maintanable code. Částí kódu by měli být rozděleny do komponent, které by neměli mít mezi sebou závislost případně velmi minimální. Díky tomu by mělo být možné v budoucnu komponenty dle potřeby vyčlenit do mikroslužeb a ty škálovat.
 
+Kód by měl být dělený do izolovaných komponent, které mezi sebou budou komunikace pomocí message service - synchroní v případě, že je potřeba dodržet ACID. Je zde otázka jak moc by měli být izolované - jestli např. i na úrovni DB, pokud ano, tak by to v podstatě byla MicroService architektura s tím, že MicroSlužby se vysazují jako jeden celek, což by mělo jisté výhody.
+
 ### Návrh nového SW
 
 Tato architektura by mohla být novým standardem co volit pro rychlý vývoj a přitom si zachovat možnost kdykoli přejít poměrně pohodlně na MicroServices.
