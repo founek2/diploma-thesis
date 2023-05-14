@@ -67,3 +67,55 @@ Postup jak snížit počet mikro-služeb při zachování low-coupling. Výslede
 # Praxe
 
 Pracuji půl roku ve společnosti, kde máme architekturu Microservices s 20 mikroslužbami, vyvíjeno 3 roky, napsáno v Rustu, a plánuji ji použít v rámci práce jako ukázku jak se to nemá dělat. Obrovská provázanost/závislost služeb. Nic jako distribuované transakce nepoužívají - chyba znamená ruční hledání příčiny a nápravu. Spousta mikroslužeb a pouze 2 vyvojáři. Odebírání funkcí z rozhraní je čistě na vývojáří aby věděl že nic potenciálně nerozbije. Nulový monitoring u služeb jaké všechny rozhraní z ostatních služeb volá a závisí tak na nich.
+
+## Context
+
+Purpose of platform is to connect users with their personal financial advisor. Users can have different level of subscription and can connect their account`s to platform, which will process their transaction into nice overview.
+
+## Example architecture
+
+Graph below shows current Microservice architecture. Every node is MicroService and every edge represents dependency (e.g. "service1 -> service2" means service1 depends on service2). There is no API gateway and every MicroService has it`s API accessible from outside.
+
+![Current Microservice architecture graph](_media/microservices-current-commented2.png)
+
+Just by looking at graph you see that there is quite complexity and this contains only direct dependencies via http, it does not contain relations via async queues nor any dependencies on third-party services.
+
+### Advantages
+
+scaling - every service has it`s own database and service discovery is in place, so it is possible to scale every service independently.
+
+Single Responsibility - thinking in terms of MicroServices it is forcing developer to separate unrelated features, which is very good to keep unrelated parts separated.
+
+### Cons
+
+scaling - In reality there is no autoscaling, just running 2 instances of each service
+
+Http communication - http protocol is not bad by itself, but inherently it does not contain any type definition. Yes, there are some solution like Swagger, which is used in this case, but since it is not part of http itself, it is harder to manage. E.g. swagger definitions can become out of sync with code. There are some tools which can be used to automate this process, but not for every language and it is not always possible. More modern solutions like gRPC have type definition as part of it`s core and are easier to use and integrate (+ little bit faster).
+
+no transactions - in this example transactions are not used anywhere. I presume there was presumtion not to use/care about transaction on MS level, because most of implementation contains just around 1-3 db calls, so low risk something will fail. But no transactions anywhere across whole platform is just bad design decision. There are not even revert actions, so when any error happends, it usually just results in http 500. It will be picked by alerting system and some developer should pick it up and investigate + fix it.
+
+development speed - to add/edit feature usually means touching multiple MS. Since every http call has a lot of subsequent calls, thus lot of dependencies and it becomes quite hard to write tests, which should be as easy as possbile. This is not inherently cons of MicroService architecture, but rather of bad design.
+
+Error prone - Since whole platform is written in Rust, which is strictly typed language, it is safe for single service. But when it comes to communication, it is imposible to enforce type safety for http calls. Every MS usually defines it`s own struct for parsing http body and there is no way how to enforce, that it was defined properly e.g. does not contain any required field, which is not returned by target API.
+
+no failover - even though MSs architecture should be highly available by design, it always come down to the actuall implementation. In this case whener any service recieves any error from dependent service, it just propagates the error. And since there is so much dependencies, it is very likely, that whenever there will be an error in one MS (either because of programmer mistake an invalid DB data) the vast majority of platform will suddently stop working until the error is fixed - probably by reverting to older version.
+
+> MS = MicroService
+
+### Monolit
+
+<!-- Vysoká provázanost -> Monolit zaručí type safety (compile time checked), potřeba škálovat pouze 3 služeb zpracovávající transakce, lze vytvoři jednoduše ACID vs. komplexita distribuovaných transakcí (koordinátor/saga), no autoscaling (HA simply by running two instances)-->
+
+So in this case there are just two advantages of MircoService architecture:
+
+-   scaling
+-   logical separation (spliting code into multiple MS)
+
+Converting this into modular monolith we would gain:
+
+-   logical separation - this should be enforced by tools, ideally by compiler or run-time
+-   scaling - since whole platform has couple of thousands users and is written in Rust (high performance language) every service has just 7MB memory footprint most of the time -> 20 (num. of services) x 7MB \* 3 (num. of instances) <= 500 MB, so there is no issue running this with low resources in multiple instances in terms of CPU/Memory usage
+-   no need for distributed transactions - We could use just normal transactions. Or we can decide to add distributed transactions later on, but inherently they add a lot of additional complexity (e.g. Saga pattern or coordinator)
+-   type safe interfaces and comminucation across whole platform at compile time
+
+> I think this will apply to a lot of other projects with MicroService architecture as well
