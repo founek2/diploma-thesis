@@ -29,3 +29,4 @@ Jedná se čistě o nastřelený návrh.
 ### Nápady
 
 -   návrh jednoduché aplikace pro všechny tři architektury na které budou dobře vidět praktické rozdíly - api, objedávka, platba, sklad
+-   návrh/napsání frameworku pro Modulith aplikace v Rustu
