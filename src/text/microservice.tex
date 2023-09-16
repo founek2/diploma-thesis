@@ -1,0 +1,14 @@
+\section{Microservices}
+Lot of people consider this architecture as solution for every problem. What architecture for new project? Microservices. Is your application slow? Convert it to Microservices. Experiencing slow development? Microservices are the solution. Fair enough, the architecture really does change the game and there are definitely projects where it is the best possible option, but from my experience it seems like people are nowadays using it carelessly as the only correct solution ignoring its disadvantages.
+
+`Microservices are independently releasable services that are modeled around a business domain. A service encapsulates functionality and makes it accessible to other services via networks—you construct a more complex system from these building blocks. One microservice might represent inventory, another order management, and yet another shipping, but together they might constitute an entire ecommerce system. Microservices are an architecture choice that is focused on giving you many options for solving the problems you might face.' \cite{BUILDING_MS_WHAT_ARE}
+
+`They are a type of service-oriented architecture, albeit one that is opinionated about how service boundaries should be drawn, and one in which independent deployability is key. They are technology agnostic, which is one of the advantages they offer.'  \cite{BUILDING_MS_WHAT_ARE}
+
+From a technology viewpoint, microservices expose the business capabilities that they encapsulate via one or more network endpoints \cite{MON_TO_MS_MICROSERVICE} (for example, a queue or a REST API \cite{BUILDING_MS_WHAT_ARE}, as shown in Figure~\ref{img:microservices_basic}). Microservices communicate with each other via these networks — making them a form of distributed system. They also encapsulate data storage and retrieval, exposing data, via well-defined interfaces. So databases are hidden inside the service boundary. \cite{MON_TO_MS_MICROSERVICE}
+
+\begin{figure}
+    \centering
+    \includesvg[width=0.7\textwidth]{images/Microservices_basic.svg}
+    \caption{A microservice exposing its functionality over a REST API and a topic. \cite{BUILDING_MS_WHAT_ARE}\label{img:microservices_basic}}
+\end{figure}

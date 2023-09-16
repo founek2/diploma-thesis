@@ -1,0 +1,31 @@
+% Shopify - from Monolith to Modulth https://www.youtube.com/watch?v=ISYKx8sa53g
+
+% System vs application? I want probably refer to app
+\section{Monolith}
+Probably the most well known architecture praised by some, hated by others is the Monolith. Now often referred to as legacy \cite{MON_TO_MS_MONOLITH}, which is absolutely not true. Surprisingly a lot of people I know imagine under this term not a properly structured application, but rather `Big ball of mud' \cite{BIG_BALL_OF_MUD} (haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle). In this section we are going to deep dive into what Monolith is and isn't, eliminating common misconceptions.
+
+When I talk about the monoliths, I am primarily referring to a unit of deployment. \textit{When all functionality in a system had to be deployed together, we consider it a monolith.} There are at least two types of monolithic systems that fit the bill: the single-process system and the distributed monolith. \cite{MON_TO_MS_MONOLITH}
+
+% Starting high level
+\subsection{The Single process Monolith}
+The most simple kind of system in which all of the code is deployed as a single process, as in Figure~\ref{img:monolith_single_process}. There might be multiple instances of this process running for scaling or availability, but fundamentally all the code is packed into single process. Usually these single-process systems can be simple distributed systems on their own as nearly always end up reading data from or storing data into a database. \cite{MON_TO_MS_MONOLITH}
+
+\begin{figure}
+    \centering
+    \includesvg{images/monolith_single_process.svg}
+    \caption{A single process monolith: all code is packaged into a single process. \cite{MON_TO_MS_MONOLITH}\label{img:monolith_single_process}}
+\end{figure}
+
+\subsection{Distributed Monolith}
+\begin{quote}
+    A distributed system is one in which the failure of a computer you didn’t even know existed can render your own computer unusable. \cite{lamport1987distribution}
+    \begin{flushright}
+        - Leslie Lamport
+    \end{flushright}
+\end{quote}
+
+A distributed monolith is a system that consists of multiple services, but for whatever reason the entire system has to be deployed together. A distributed monolith may well meet the definition of a service-oriented architecture, but all too often fails to deliver on the promises of SOA. Distributed monoliths usually have all the disadvantages of a distributed system, and the disadvantages of a single-process monolith, without having enough upsides of either. \cite{MON_TO_MS_MONOLITH}
+
+Distributed monoliths typically emerge in an environment where not enough focus was placed on concepts like information hiding and cohesion of business functionality, leading instead to highly coupled architectures in which changes ripple across service boundaries, and seemingly innocent changes that appear to be local in scope break other parts of the system.  \cite{MON_TO_MS_MONOLITH}
+
+% Going more low level - developer point of view, maybe some example?
