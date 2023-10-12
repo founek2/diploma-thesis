@@ -1,9 +1,12 @@
 \section{Microservices}
-Lot of people consider this architecture as solution for every problem. What architecture for new project? Microservices. Is your application slow? Convert it to Microservices. Experiencing slow development? Microservices are the solution. Fair enough, the architecture really does change the game and there are definitely projects where it is the best possible option, but from my experience it seems like people are nowadays using it carelessly as the only correct solution ignoring its disadvantages.
+Many people consider this architecture as solution for every problem. What architecture for new project? Microservices. Is your application slow? Convert it to Microservices. Experiencing slow development? Microservices are the solution. Fair enough, it really does change the game and there are definitely projects where it is the best possible solution. Although in my experience, people tend to use this architecture carelessly as the only correct solution, ignoring its disadvantages, and there are definitely projects where for example monolith would be more suited for task and save a lot of many and time. So what exactly is it?
 
-`Microservices are independently releasable services that are modeled around a business domain. A service encapsulates functionality and makes it accessible to other services via networks—you construct a more complex system from these building blocks. One microservice might represent inventory, another order management, and yet another shipping, but together they might constitute an entire ecommerce system. Microservices are an architecture choice that is focused on giving you many options for solving the problems you might face.' \cite{BUILDING_MS_WHAT_ARE}
+\begin{quote}
+    Microservices are independently releasable services that are modeled around a business domain. A service encapsulates functionality and makes it accessible to other services via networks—you construct a more complex system from these building blocks. One microservice might represent inventory, another order management, and yet another shipping, but together they might constitute an entire ecommerce system. Microservices are an architecture choice that is focused on giving you many options for solving the problems you might face. \cite{BUILDING_MS_WHAT_ARE}
 
-`They are a type of service-oriented architecture, albeit one that is opinionated about how service boundaries should be drawn, and one in which independent deployability is key. They are technology agnostic, which is one of the advantages they offer.'  \cite{BUILDING_MS_WHAT_ARE}
+    They are a type of service-oriented architecture, albeit one that is opinionated about how service boundaries should be drawn, and one in which independent deployability is key. They are technology agnostic, which is one of the advantages they offer. \cite{BUILDING_MS_WHAT_ARE}
+\end{quote}
+
 
 From a technology viewpoint, microservices expose the business capabilities that they encapsulate via one or more network endpoints \cite{MON_TO_MS_MICROSERVICE} (for example, a queue or a REST API \cite{BUILDING_MS_WHAT_ARE}, as shown in Figure~\ref{img:microservices_basic}). Microservices communicate with each other via these networks — making them a form of distributed system. They also encapsulate data storage and retrieval, exposing data, via well-defined interfaces. So databases are hidden inside the service boundary. \cite{MON_TO_MS_MICROSERVICE}
 
@@ -12,3 +15,45 @@ From a technology viewpoint, microservices expose the business capabilities that
     \includesvg[width=0.7\textwidth]{images/Microservices_basic.svg}
     \caption{A microservice exposing its functionality over a REST API and a topic. \cite{BUILDING_MS_WHAT_ARE}\label{img:microservices_basic}}
 \end{figure}
+
+% TODO how to find correct size of microservice
+
+
+\subsection{Brief history}
+Dr. Peter Rodgers during a presentation in 2005 used the term `Micro-web-Services' on topic of cloud computing. Redgers promoted software components supporting micro-web-services. The first usage of the term "microservices" is to believed to be first heard in May, 2011, in a workshop for software architects, where they use it to describe an architectural style several of them had recently explored. Later on in 2012, the term was formally adopted. They had been experimenting with building continuously deployed systems, while incorporating the DevOps philosophy. From there this form of architecture quickly gained popularity. \cite{BRIEF_HISTORY_OF_MS}
+
+% TODO add sources
+Netlix is a company considered as a pioneer in the field together with Amazon, which was more focusing on Cloud computing. Also, other large companies joined the ride like Uber, Etsy and many more. This architecture was the answer companies were looking for, due to its ability to offer agility, scalability and ability to adapt to changing business requirements. \cite{MS_COMPANIES}
+
+
+
+\subsection{Performance}
+Microservices being distributed system, it necessarily adds higher latency compared to Monolithic systems, but it brings many advantages which can easily balance this negative side. The biggest being the scalability. Microservices are very small unis, which can usually start up in couple of seconds, so it can be scaled based on current workload fully leveraging cloud computing and pricing per usage rather having oversized infrastructure. On other hand scaling does not work out of the box and it requires system to support it. Also, it is not possible to scale up infinitly and some bottleneck will stand out, usually being database.
+
+
+\subsection{Maintainability}
+% Distributed tracing
+Distributed system are much harder to maintain due to added complexity. Even thing like investigating some issue requires collecting logs from multiple servers, aggregating them together and having tool to effectively search through it. Or even better way is to use Distributed tracing, which can generate vast amount of data even on simple systems.
+
+\subsection{Sustainability}
+
+\subsection{Testability}
+In theory testing should be breeze, but in really not so much, because services are usually part of a larger business-logic dependent on other services to complete the logic. Practices for service-testing (e.g. mocks, API-contract testing) are known, but they are very complex and costly to implement. In comparisement for monoliths we have many proved testing strategies including end-to-end with many great frameworks/libraries available. \cite{MC_TESTABILITY}
+
+Service can often become inaccessible, due to issue on many layers of network or security operated by an orchestrating software. These kinds of problems are hard to simulate in-order to prevent faults from reaching production.
+
+\subsection{Complexity}
+% orchestrator + deployment
+Breaking whole system into isolated `micro' pieces (services) makes it easier for developers to implement new features and work independently, but it definitely makes the whole system more complicated, because of added network communication and more complicated deployment. Network communication is required for inter-service communication and also for outside world, and there is a lot we can choose from. Starting from classical patterns like request-response or more data driven approaches like observer or publish-subscribe.
+% TODO dive more deep into communication 
+
+Managing deployment of microservices is a big task and over the years lot of automation tools were created. Today standard way on how to deploy applications with rise of Docker became containers, due to its self-containement, isolation and ability to run absolutely anywhere \cite{7093032}. Container Orchestration make deployment and maintenance much easier thanks to automatization - examples: Kubernetes\cite{KUBERNETES}, Nomad\cite{NOMAD}. It takes care of whole lifecycle of the application and even auto-scaling. Unfortunately, managing those tools is a big challenge on its own, but thankfully nowadays we can get fully managed orchestrators `as a Service', so we can fully focus on building our system and not on infrastructure.
+
+% TODO more deep into example technology stack - maybe later in comparison chapter
+
+% Distributed transactions
+Distributed transactions have the same processing requirements as regular database transactions, but they must be managed across multiple resources, making them more challenging to implement. When ACID transactions are required, the 2PC \cite{2PC_PATTERN} (two-phase commit) architecture with central transaction coordinator is a one solution. On the other, hand if eventual consistency is enough, there is SAGA pattern \cite{SAGA_PATTERN}, which works sequentially.
+
+% language and technology agnostic
+Language and technology-agnostic is another advantage presented around Microservices. A personally perceive it as negative for small teams, where few developers manages dozens of Microservices and they would have to constantly switch context. But it is great trait for large teams, where ideally one team has just one or couple of microservices. It gives a lot of freedom and developers like to play with every new shining piece of software/technology, which can result (if unchecked) in technology jungle to which no one understands and is unable to maintain. The same applies for languages. Although I am strong advocate for always using language for the right task, it must be well argued and everyone on the team should be familiar with it, because in small teams there is usually shared code ownership.
+

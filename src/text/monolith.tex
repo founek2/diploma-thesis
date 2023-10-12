@@ -2,13 +2,16 @@
 
 % System vs application? I want probably refer to app
 \section{Monolith}
-Probably the most well known architecture praised by some, hated by others is the Monolith. Now often referred to as legacy \cite{MON_TO_MS_MONOLITH}, which is absolutely not true. Surprisingly a lot of people I know imagine under this term not a properly structured application, but rather `Big ball of mud' \cite{BIG_BALL_OF_MUD} (haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle). In this section we are going to deep dive into what Monolith is and isn't, eliminating common misconceptions.
+Probably the most well known architecture praised by some, hated by others is the Monolith. Surprisingly a lot of people I know imagine under this term not a properly structured application, but rather `Big ball of mud' \cite{BIG_BALL_OF_MUD} (haphazardly structured, sprawling, sloppy, duct-tape-and-baling-wire, spaghetti-code jungle). Others refer to it as some kind of legacy system, which should be eliminated as soon as possible. Off course the is some through in all of those statements. Monolithic architecture is with us from early days of software development, so lots of legacy systems exists, but we have to understand that they are \textbf{legacy systems}. They were written decades ago, when Languages weren't mature as are now and architecture research was at the beginning. To give you some numbers - according to Google Scholar 20 thousands articles were published about \textit{Software architecture} until year 2000 \cite{SCHOLAR_2000} and from 2001 until 2023 it was over 244 thousands \cite{SCHOLAR_2001_2023}. The progress in software architecture was huge over the last two decades and new concepts for Monolithic architectures were created as well.
 
-When I talk about the monoliths, I am primarily referring to a unit of deployment. \textit{When all functionality in a system had to be deployed together, we consider it a monolith.} There are at least two types of monolithic systems that fit the bill: the single-process system and the distributed monolith. \cite{MON_TO_MS_MONOLITH}
+In this section we are going to deep dive into what Monolith is and isn't, what are new aproaches and we'll try to eliminate common misconceptions. When I talk about the monoliths, I am primarily referring to a unit of deployment\cite{MON_TO_MS_MONOLITH}. \textit{When all functionality in a system has to be deployed together, we consider it a monolith \cite{MON_TO_MS_MONOLITH}.} There are at least three types of monolithic systems that fit the bill: the single-process system, modular monolith and distributed monolith \cite{BUILDING_MS_MONOLITH}.
+
 
 % Starting high level
 \subsection{The Single process Monolith}
-The most simple kind of system in which all of the code is deployed as a single process, as in Figure~\ref{img:monolith_single_process}. There might be multiple instances of this process running for scaling or availability, but fundamentally all the code is packed into single process. Usually these single-process systems can be simple distributed systems on their own as nearly always end up reading data from or storing data into a database. \cite{MON_TO_MS_MONOLITH}
+The most common example of system in which all the code is deployed as a single process, as in Figure~\ref{img:monolith_single_process}. There might be multiple instances of this process running for scaling or availability, but fundamentally all the code is packed into single process. Usually these single-process systems can be simple distributed systems on their own as nearly always end up reading data from or storing data into a database. \cite{MON_TO_MS_MONOLITH}
+
+These single-process monoliths probably represent the vast majority of the monolithic systems. There is not any clear boundary between individual parts and whole application is highly coupled \cite{EVOLUTIONARY_ARCHITERUES_COUPLING} meaning changing any part of the system inevitably results in affecting other parts as well.
 
 \begin{figure}
     \centering
@@ -16,7 +19,23 @@ The most simple kind of system in which all of the code is deployed as a single 
     \caption{A single process monolith: all code is packaged into a single process. \cite{MON_TO_MS_MONOLITH}\label{img:monolith_single_process}}
 \end{figure}
 
-\subsection{Distributed Monolith}
+
+% -------------------------------------------------------
+\subsection{The Modular Monolith}
+`As a subset of the single-process monolith, the modular monolith is a variation in which the single process consists of separate modules. Each module can be worked on independently, but all still need to be combined together for deployment, as shown in Figure \ref{img:monolith_single_process_modular}.' \cite{BUILDING_MS_MONOLITH}
+
+It represents nice evolution step for Monolithic systems. Well-defined module boundaries can allow for a high degree of parallel work, while avoiding challenges associated with distributed microservice architecture and still have simple deployment topology \cite{BUILDING_MS_MONOLITH}.
+
+
+\begin{figure}
+    \centering
+    \includesvg{images/monolith_single_process_modular.svg}
+    \caption{In a modular monolith, the code inside the process is divided into modules. \cite{BUILDING_MS_MONOLITH}\label{img:monolith_single_process_modular}}
+\end{figure}
+
+
+% -------------------------------------------------------
+\subsection{The Distributed Monolith}
 \begin{quote}
     A distributed system is one in which the failure of a computer you didn’t even know existed can render your own computer unusable. \cite{lamport1987distribution}
     \begin{flushright}
@@ -26,6 +45,52 @@ The most simple kind of system in which all of the code is deployed as a single 
 
 A distributed monolith is a system that consists of multiple services, but for whatever reason the entire system has to be deployed together. A distributed monolith may well meet the definition of a service-oriented architecture, but all too often fails to deliver on the promises of SOA. Distributed monoliths usually have all the disadvantages of a distributed system, and the disadvantages of a single-process monolith, without having enough upsides of either. \cite{MON_TO_MS_MONOLITH}
 
-Distributed monoliths typically emerge in an environment where not enough focus was placed on concepts like information hiding and cohesion of business functionality, leading instead to highly coupled architectures in which changes ripple across service boundaries, and seemingly innocent changes that appear to be local in scope break other parts of the system.  \cite{MON_TO_MS_MONOLITH}
+Distributed monoliths typically emerge in an environment where not enough focus was placed on concepts like information hiding and cohesion of business functionality, leading instead to highly coupled architectures in which changes ripple across service boundaries, and seemingly innocent changes that appear to be local in scope break other parts of the system \cite{MON_TO_MS_MONOLITH}. Generally there is no reason why to choose this distributed architecture over microservices, because it comes with a lot of disadvantages and should be avoided with exception being conversion from monolith to microservices where this might become an intermediate step \cite{DIST_MON_WHICH_BUILDING}.
+
+I am including this type of Monolith for the completeness, but since it is discouraged I will not refer to it unless explicitly specified.
+
+
+
+% -------------------------------------------------------
 
 % Going more low level - developer point of view, maybe some example?
+
+\subsection{Performance}
+Deployment as a single process brings big benefit in terms of performance compared to any type of distributed system, because network comunication is subject to the laws of physics and always add latency. Whereas inter process communication has the lowest latency possible making Monolith in theory the fastest architecture out here. This rule will apply, until the need to scale the application arises and vertical scaling is not an option anymore. Since the whole system is deployed as one unit, horizontal scaling means running multiple instances of the whole monolith, which is in most cases not very efficient, because usually the system does not have uniform load, but some parts of the system does the most of the work, and we still have those other parts taking up resources even though we actually don't even need them.
+
+
+% latency
+% throughput
+% scalability
+% 
+
+\subsection{Maintainability}
+\begin{quote}
+    Software maintainability is defined as the degree to which an application is understood, repaired, or enhanced. \cite{SOFTWARE_MAINTAINABILITY}
+\end{quote}
+Maintenance is tightly related to Complexity. Usually the more complex application, the more hard to maintain and with monolithic high coupling it is not very good at it. Although there are some positive sides, having debugging and logging much more easier than with any distributed system, where it is multiple times harder and requiring collection of tools just to collect some information.
+
+
+% Easy debugging | logging
+
+\subsection{Sustainability}
+% Not sure what should be here
+Every system today needs some kind of database either relational like SQL or noSQL and ensuring data consistency (to some extent). This is mainly achieved by transactions. Using it in Monolithic systems is very easy, and every language has support for it, while running distributed transactions requires special patterns like Saga \cite{SAGA_PATTERN}.
+
+\subsection{Testability}
+Since in classical monolith, there are no boundaries, it is nearly impossible to test just specific parts of the system in isolation, because the whole system needs to be present in order for it to function. So, writing end-to-end tests is usually the answer, but it has much harder to write and even run them, because they take much more time, compared to testing just isolated parts.
+
+With modular monolith, the testing is much easier, since it allows testing just specific modules. The tests are smaller, which results in higher speed and are easier to write, because developer can focus just on the specific part of the system.
+
+\subsection{Complexity}
+High coupling makes it very hard to do any modification, because it requires vast knowledge of the whole system and as the developer team grows they start to get into each other way, wanting to change the same piece of code. Also, confusion around ownership of the code arouses and who makes the decisions \cite{MON_TO_MS_MONOLITH}.
+
+The architecture itself (Single process or distributed monolith) does not enforce any kind of restriction on how the application should be structured and gives developer maximal freedom. In my experience this has proven as fatal in many projects, since it presents heavy burden and if not properly designed in the beginning and kept in check during the whole development cycle, it can very easily lead to `Big ball of mud' \cite{BIG_BALL_OF_MUD}.
+
+% TODO: Take into account database coupling of records and how Modulth does it
+The high coupling is one of the reasons why the Modular Monolith was created. It preserves all those positive properties of Single process Monolith, while decreasing coupling by defining boundaries inside monolith. It is than again up to developers to properly define those boundaries and enforce them - this step is very important, because less experienced developers often tend to simplify their work at expense of architecture.
+
+Deployment is very simple compared to any kind of distributed system, since there is just one unit. The downside being size of the unit, not even because of space (we have pretty fast network and cheap disk space), but rather higher resource usage and much slower startup compared to microservices.
+% TODO release complexity
+
+% Dev tools stack

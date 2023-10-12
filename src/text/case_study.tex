@@ -1,0 +1,54 @@
+\section{Bippit project}
+At time of writing I am working over a year in company called \textit{Bippit Ltd}\cite{BIPPIT} on their platform for financial wellbeing. The purpose of the platform is to help users to connect with coaches and to give them tools to educate themselves, get their finances under control and plan for the future.
+
+This project was developed for over 4 years with just handful of developers. Backend is written using Microservices architecture in Rust and there are 2 frontend applications: native iOS and Web. Additionally, there are two other web frontends for management. Admin portal used by advisors for communication with users and by also by support/admin users. Latter is Customer portal, available for our customers (employers) to see interactions of theirs employees with our platform.
+
+\subsection{User journey}
+Over the years platform gained a lot of features, so I will highlight just the main ones, to give you some idea of what the platform does. I will describe the flows using User journeys:
+
+\begin{example}[Sign Up]
+    Employee Joe of company Z receives an email about gaining access to Bippit platform, because his employer bought it as a benefit. Joe opens up web browser and goes to registration page. He fills email and password and go through the onboarding process (couple of basic questions about his financial experience and goals). Once the registration is completed, he lands on the home page.
+\end{example}
+
+\begin{example}[Advisor]
+    Right after signUp, Joe is presented with the name of personal financial advisor, who was assigned to him. He can send him a message via chat or preferably book a call, so they can meet face to face, get to know Joe's expectations, look into his finances and set some goals.
+\end{example}
+
+\begin{example}[Analyse]
+    In the meantime when Joe is waiting for the first meeting with his Advisor, platform offers to connect his bank accounts, so it can show him some insight into his spending. In UK, they have Open banking standard, which allows in just 3 steps give access for application access to his accounts and transactions. After connection is completed, Joe is presented with graphs showing how much in which category he is spending every month. He can also set goals (e.g. wedding or buy a house), connect them with accounts, and it will automatically track any progress (savings).
+\end{example}
+
+\begin{example}[Education]
+    On Learning page, Joe can read thousands of articles about finances written by our financial Advisors or watch records of past webinars. Also, see any upcoming webinar and register to it.
+\end{example}
+
+% \subsection{Vocabulary}
+% Before moving into technical side of the thing, we need to first define few terms, which will be used throughout this chapter:
+% \begin{description}
+%     \item[Insight]
+% \end{description}
+
+
+\subsection{Infrastructure}
+Bippit's infrastructure is build on products from HashiCorp (HashiStack). Cloud provider is used for VM provisioning and networking, but they manage the rest by themselves via custom Terraform scripts (IaaS). What are the main components:
+\begin{itemize}
+    \item Nomad  is a simple and flexible scheduler and orchestrator to deploy and manage containers. \cite{NOMAD}
+    \item Consul is a service networking solution to automate network configurations, discover services, and enable secure connectivity. \cite{CONSUL}
+    \item Vault secures, stores, and tightly controls access to tokens, passwords, certificates, API keys, and other secrets critical in modern computing. \cite{VAULT}
+\end{itemize}
+
+I don't know what was the reason to go with HashiCorp stack, but taking into account experience with it after a year, I am amazed how well the components are integrated and the setup/management of the whole cluster was a breeze in comparisement to Kubernetes (K8s). There are now many managed K8s clusters available, but not a single managed Nomad cluster provider I could find (there was unmanaged.io project, but it does not seem to work anymore). I believe the reason for this is simply - Nomad is just easy to run and manage. I am not condemning K8s, the complexity has for sure it's reason, but just for this project Nomad was more than enough and was much easier to work with. Over the year we had 2 incidents in production. First was caused by some weird state of cluster, which was solved by restarting it and second was caused by our cloud provider, who had networking issues. Since we did not have anyone dedicated for infrastructure and everything was managed by BE developers, we just needed something what is easy to use and will work. Nomad did exactly that without any extra complexity, which we did not need and K8s would most likely add.
+
+
+\subsection{Microservices}
+The whole platform consist of 26 Microservices, 4 of them being backend for frontend. Every microservice exposes its API via HTTP protocol for inter-service communication as well as for outside world, so there is no API Gateway. For background tasks messaging system is used with queues, specifically Amazon's SNS to send messages and SQS to receive them.
+
+Git is used for versioning with repository per Microservice. I see some advantages having repositories separate in compare to Monorepo. Mainly Pull requests are better organized and compact - change to one Microservice should be isolated and having Monorepo allows touching code in multiple Mircoservices, and it would be up to Code reviewer to notice this. Also, it forces developers to think about changes as more isolated since they can modify only single Microservice in single repository - they have to switch to another to do next changes. The same flow could be enforced by for example git hooks, but this way it does not require any configuration. On the other hand, it is a bit harder for newcomers just to download all repositories, since 26 is quite a lot and requires to add some structure to local repositories for easier navigation. However, this is easily mitigated by scripting this process.
+
+% scope and responsibility
+Finding the right size of microservices is a hard task. In this project Domain-driver design was used to locate `small enough parts' (this was approximated) and mapped into Microservices. Some have well-defined boundaries, others some grey zone, few over time overgowned and should have been split, because maintating has become much more harder with growing complexity. Few examples:
+
+\begin{itemize}
+    % TODO add more examples
+    \item Advisor was supposed to hold logic and data around advisors and their relation to users. Later on chat functionality were added and since it started with just basic interchange of messages between advisors and users, the unfortunate decision was made to include everything around messaging here as well. Over the time this functionality got extended, and this Microservice has become the most bloated of them all.
+\end{itemize}

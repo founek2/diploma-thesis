@@ -4,6 +4,9 @@
 % uncomment the following line to create an unnumbered chapter
 \chapter*{Introduction}\addcontentsline{toc}{chapter}{Introduction}\markboth{Introduction}{Introduction}
 %---------------------------------------------------------------
+
+% vymezení rozsahu - primárně malé až střední projekty, web-based architecture (not Performance apps)
+
 \setcounter{page}{1}
 
 % The following environment can be used as a mini-introduction for a chapter. Use that any way it pleases you (or comment it out). It can contain, for instance, a summary of the chapter. Or, there can be a quotation.
@@ -15,8 +18,18 @@
 
 %---------------------------------------------------------------
 \chapter{Analysis}
-%---------------------------------------------------------------
 
 \input{text/monolith}
 \input{text/microservice}
+\input{text/comparison}
 \input{text/modulith}
+
+%---------------------------------------------------------------
+\chapter{Case study}
+In this chapter we will have a closer look on one of the project I've worked, which was build using Microservices architecture from the start. I will share my experience from position of backend developer on what it means to work on Microservices architecture alone and in a team. What are the downsides and upsides for developers and the whole application cycle (planning, implementing, bug fixing and deployment).
+
+\input{text/case_study}
+
+%---------------------------------------------------------------
+\chapter{2nd?}
+\input{text/methodology}
