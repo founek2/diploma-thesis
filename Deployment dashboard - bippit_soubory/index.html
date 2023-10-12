@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <title>Deployment dashboard</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <style type="text/css">
+        #container {
+            padding: 1em;
+            text-align: center;
+        }
+
+        #mynetwork {
+            width: 95%;
+            min-height: 600px;
+            height: 90vh;
+            margin: 4em auto 0 auto;
+            -webkit-box-shadow: -1px -3px 18px 0px rgba(0, 0, 0, 0.75);
+            -moz-box-shadow: -1px -3px 18px 0px rgba(0, 0, 0, 0.75);
+            box-shadow: -1px -3px 18px 0px rgba(0, 0, 0, 0.75);
+        }
+
+        #library-picker {
+            display: inline-block;
+        }
+
+        table {
+            min-width: 400px;
+            width: 80%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        .active {
+            font-weight: 600;
+        }
+
+        #deploy--container {
+            padding-bottom: 3rem;
+
+        }
+    </style>
+    <link rel="stylesheet" href="progress.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-indigo.min.css" />
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <div id="deploy--container">
+            <h2>Pending deployments</h2>
+            <details>
+                <summary>Expand to show tips</summary>
+                Click on service name to get commit diff between specified version and previous<br>
+                Click on commit refirects you to Bitbucket commit
+            </details>
+            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"></table>
+
+            <br />
+
+            <a href="https://ci.internal.bippit.com/blue/organizations/jenkins/deployment/activity/" target="_blank">
+                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                    Deploy pipeline
+                </button>
+            </a>
+
+        </div>
+
+        <h2>Improvements tracking</h2>
+
+        <div class="progress-section" data-aos="fade-left" data-aos-once="true">
+            <!-- <div class="task-progress">
+                <p>Frontend
+                    <span>80%</span>
+                </p>
+                <progress class="progress progress1" max="100" value="80"></progress>
+            </div> -->
+        </div>
+        <a href="https://www.notion.so/bippit/Ongoing-improvements-14467c08b6cc46a3abf620358a02e336">Documentation</a>
+
+        <h3>Version and dependency graph</h3>
+        <p>Features:</p>
+        <p>
+            Hold cursor over node - it will show you current version deployed on all environments and also versions
+            of
+            dependencies.</p>
+
+        <p>Click on node will show you direct relations between services.</p>
+        </ul>
+
+
+        Pick Libraries:
+        <div id="library-picker"></div>
+
+        <div><input type="checkbox" id="show-external-input" /> <label>Show external services</label></div>
+    </div>
+    <div id="mynetwork"></div>
+    <script type="module" src="deployment.js"></script>
+    <script type="module" src="progress.js"></script>
+    <script type="module" src="graph.js"></script>
+</body>
+
+</html>
