@@ -32,9 +32,9 @@ Over the years platform gained a lot of features, so I will highlight just the m
 \subsection{Infrastructure}
 Bippit's infrastructure is build on products from HashiCorp (HashiStack). Cloud provider is used for VM provisioning and networking, but they manage the rest by themselves via custom Terraform scripts (IaaS). What are the main components:
 \begin{itemize}
-    \item Nomad  is a simple and flexible scheduler and orchestrator to deploy and manage containers. \cite{NOMAD}
-    \item Consul is a service networking solution to automate network configurations, discover services, and enable secure connectivity. \cite{CONSUL}
-    \item Vault secures, stores, and tightly controls access to tokens, passwords, certificates, API keys, and other secrets critical in modern computing. \cite{VAULT}
+    \item \it{Nomad}  is a simple and flexible scheduler and orchestrator to deploy and manage containers. \cite{NOMAD}
+    \item \it{Consul} is a service networking solution to automate network configurations, discover services, and enable secure connectivity. \cite{CONSUL}
+    \item \it{Vault} secures, stores, and tightly controls access to tokens, passwords, certificates, API keys, and other secrets critical in modern computing. \cite{VAULT}
 \end{itemize}
 
 I don't know what was the reason to go with HashiCorp stack, but taking into account experience with it after a year, I am amazed how well the components are integrated and the setup/management of the whole cluster was a breeze in comparisement to Kubernetes (K8s). There are now many managed K8s clusters available, but not a single managed Nomad cluster provider I could find (there was unmanaged.io project, but it does not seem to work anymore). I believe the reason for this is simply - Nomad is just easy to run and manage. I am not condemning K8s, the complexity has for sure it's reason, but just for this project Nomad was more than enough and was much easier to work with. Over the year we had 2 incidents in production. First was caused by some weird state of cluster, which was solved by restarting it and second was caused by our cloud provider, who had networking issues. Since we did not have anyone dedicated for infrastructure and everything was managed by BE developers, we just needed something what is easy to use and will work. Nomad did exactly that without any extra complexity, which we did not need and K8s would most likely add.
@@ -46,9 +46,20 @@ The whole platform consist of 26 Microservices, 4 of them being backend for fron
 Git is used for versioning with repository per Microservice. I see some advantages having repositories separate in compare to Monorepo. Mainly Pull requests are better organized and compact - change to one Microservice should be isolated and having Monorepo allows touching code in multiple Mircoservices, and it would be up to Code reviewer to notice this. Also, it forces developers to think about changes as more isolated since they can modify only single Microservice in single repository - they have to switch to another to do next changes. The same flow could be enforced by for example git hooks, but this way it does not require any configuration. On the other hand, it is a bit harder for newcomers just to download all repositories, since 26 is quite a lot and requires to add some structure to local repositories for easier navigation. However, this is easily mitigated by scripting this process.
 
 % scope and responsibility
-Finding the right size of microservices is a hard task. In this project Domain-driver design was used to locate `small enough parts' (this was approximated) and mapped into Microservices. Some have well-defined boundaries, others some grey zone, few over time overgowned and should have been split, because maintating has become much more harder with growing complexity. Few examples:
+Finding the right size of microservices is a hard task. In this project Domain-driver design was used to locate `small enough parts' (this was approximated) and mapped into Microservices. Some have well-defined boundaries, others some grey zone, few over gowned and should have been split, because maintaining has become much harder with growing complexity. Few examples:
 
 \begin{itemize}
     % TODO add more examples
-    \item Advisor was supposed to hold logic and data around advisors and their relation to users. Later on chat functionality were added and since it started with just basic interchange of messages between advisors and users, the unfortunate decision was made to include everything around messaging here as well. Over the time this functionality got extended, and this Microservice has become the most bloated of them all.
+    \item \it{Financial account} hold bank accounts information for users. Either manually created accounts or those connected.
+    \item \it{Transaction} takes care of storing financial transactions.
+    \item \it{Categorization} contains pure logic, which categorize transactions into multiple categories.
+    \item \it{Orchestrator} is used for scheduled tasks, which trigger complex flows involving multiple microservices for e.g. refreshing cached accounts and transactions from Open Banking and starts following post-processing.
+    \item \it{Advisor} was supposed to hold logic and data around advisors and their relation to users. Later on chat functionality were added and since it started with just basic interchange of messages between advisors and users, the unfortunate decision was made to include everything around messaging here as well. Over the time this functionality got extended, and this Microservice has become the most bloated of them all.
 \end{itemize}
+
+From examples above is clear, that Microservices have varying scopes/boundaries. Even having the best design possible on the start, over time features are constantly changing and inevitable it leads to uneven distribution of boundaries. It does not mean there is some issue with the design since our system might just be adapting to our changing business requirements, shifts in goals, and our design have to adapt as well. Two outcomes usually might happend. First being proper adaptation to design, once we recognize the change is needed and with it possible refactoring/split/merge of microservices. The second option is what happend to Advisor service. Over time it took more and more features even outside of its scope and when someone recognized the mistake later on the amount of work required to make the necessary changes was just too much to invest.
+% how is this possible? Microservice from definition is independent and isolated, so it should be easy just to split into two. Well, even though definitions sound great, the complexity always depends on the actuall implementations. 
+% - contracts (swaggers)
+% - compatibility
+% ability to remove something from contract
+% tracking dependency
