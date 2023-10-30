@@ -19,10 +19,9 @@ type Database struct {
 func Initialize(dsn string) Database {
 	// dsn := "unix://user:pass@dbname/var/run/postgresql/.s.PGSQL.5432"
 	var sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
-	sqldb.SetMaxOpenConns(10)
+	sqldb.SetMaxOpenConns(2 * 4)
 
 	var db = bun.NewDB(sqldb, pgdialect.New())
-	bundebug.NewQueryHook(bundebug.WithVerbose(true))
 	db.AddQueryHook(bundebug.NewQueryHook())
 	db.AddQueryHook(bunotel.NewQueryHook(
 		bunotel.WithDBName("monolith"),

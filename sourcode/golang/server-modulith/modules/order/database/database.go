@@ -17,10 +17,9 @@ type Database struct {
 
 func Initialize(dsn string) Database {
 	var sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
-	sqldb.SetMaxOpenConns(10)
+	sqldb.SetMaxOpenConns(2)
 
 	var db = bun.NewDB(sqldb, pgdialect.New())
-	bundebug.NewQueryHook(bundebug.WithVerbose(true))
 	db.AddQueryHook(bundebug.NewQueryHook())
 	db.AddQueryHook(bunotel.NewQueryHook(
 		bunotel.WithDBName("modulith-order"),

@@ -53,7 +53,7 @@ func PayForInvoice(w http.ResponseWriter, r *http.Request) {
 		attribute.String("payment.price", fmt.Sprintf("%f", invoice.Price)),
 	)
 	// Simulate communication with 3rd party payment sevice
-	time.Sleep(time.Second)
+	time.Sleep(500 * time.Millisecond)
 	span.End()
 
 	invoice.Status = "paid"
