@@ -21,6 +21,20 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
+func GetPaymentById(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var db = middleware.GetDb(r.Context())
+	var params = mux.Vars(r)
+
+	var invoice, err = db.GetPaymentByPaymentId(ctx, params["paymentId"])
+
+	if err != nil {
+		failUnexpectedError(err, w, r)
+	} else {
+		jsonResponse(invoice, w)
+	}
+}
+
 func PayForInvoice(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var db = middleware.GetDb(ctx)
@@ -51,6 +65,7 @@ func PayForInvoice(w http.ResponseWriter, r *http.Request) {
 	var payment = &database.Payment{
 		CreditCardNumber: 4311_2342_2342_1234,
 		Amount:           invoice.Price,
+		InvoiceSeqId:     invoice.Id,
 	}
 
 	_, err = db.CreatePayment(ctx, payment)

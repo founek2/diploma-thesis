@@ -21,7 +21,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
-func GetInvoiceById(w http.ResponseWriter, r *http.Request) {
+func GetPaymentById(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var db = middleware.GetDb(r.Context())
 	var params = mux.Vars(r)

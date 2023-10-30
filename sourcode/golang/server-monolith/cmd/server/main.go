@@ -52,5 +52,5 @@ func main() {
 
 	var a = App{ctx: context.Background()}
 	a.Initialize()
-	a.Run("0.0.0.0:8080")
+	a.Run("0.0.0.0:" + os.Getenv("PORT"))
 }

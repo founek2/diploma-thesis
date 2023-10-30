@@ -11,7 +11,5 @@ COPY . .
 # Run build
 RUN go build cmd/server/main.go
 
-FROM scratch AS runtime
-COPY --from=build /go/src/main ./
 EXPOSE 8080/tcp
 ENTRYPOINT ["./main"]

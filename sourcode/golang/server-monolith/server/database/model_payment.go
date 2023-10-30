@@ -21,6 +21,8 @@ type Payment struct {
 
 	Id int64 `json:"-" bun:"id,pk,autoincrement"`
 
+	InvoiceSeqId int64 `json:"-"`
+
 	PaymentId uuid.UUID `json:"id" bun:"type:uuid,default:uuid_generate_v4()"`
 
 	CreditCardNumber int64 `json:"creditCardNumber,omitempty"`

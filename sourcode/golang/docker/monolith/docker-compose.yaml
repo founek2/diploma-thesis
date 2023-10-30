@@ -6,6 +6,7 @@ services:
     restart: on-failure
     volumes:
       - ./otel-collector.yaml:/etc/otelcol-contrib/config.yaml
+
   postgres:
     image: postgres:15-alpine
     restart: on-failure
@@ -23,3 +24,20 @@ services:
       - './volumes/postgres:/var/lib/postgresql/data/pgdata'
     ports:
       - '5432:5432'
+
+  server-monolith:
+    build: "../../server-monolith/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/monolith?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+    ports:
+      - 8080:8080

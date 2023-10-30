@@ -85,6 +85,12 @@ func (db Database) GetItemsForCart(ctx context.Context, cart *Cart) ([]Item, err
 	return items, err
 }
 
+func (db Database) GetPaymentByPaymentId(ctx context.Context, paymentId string) (*Payment, error) {
+	payment := new(Payment)
+	_, err := db.NewSelect().Model(payment).Where("payment_id = ?", paymentId).Exec(ctx)
+	return payment, err
+}
+
 func (db Database) CreateOrder(ctx context.Context, order *Order) (*Order, error) {
 	_, err := db.NewInsert().Model(order).Returning("*").Exec(ctx)
 	return order, err

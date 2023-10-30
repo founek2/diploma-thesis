@@ -97,6 +97,13 @@ var routes = Routes{
 	},
 
 	Route{
+		"GetPaymentById",
+		strings.ToUpper("Get"),
+		"/api/v1/payment/{paymentId}",
+		endpoints.GetPaymentById,
+	},
+
+	Route{
 		"PayForInvoice",
 		strings.ToUpper("Post"),
 		"/api/v1/payment/invoice/{invoiceId}",

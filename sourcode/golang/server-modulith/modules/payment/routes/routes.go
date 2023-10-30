@@ -37,7 +37,7 @@ var routes = shared.Routes{
 		Name:        "GetPayment",
 		Method:      strings.ToUpper("Post"),
 		Pattern:     "/api/v1/payment/{paymentId}",
-		HandlerFunc: endpoints.GetInvoiceById,
+		HandlerFunc: endpoints.GetPaymentById,
 	},
 	shared.Route{
 		Name:        "PayForInvoice",
