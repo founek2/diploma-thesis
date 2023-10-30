@@ -1,5 +1,5 @@
 import http from 'k6/http';
-import { check } from 'k6';
+import { check, options } from 'k6';
 import exec from 'k6/execution';
 
 const API_URL = "http://localhost:8080/api/v1"
@@ -56,7 +56,7 @@ function fetchInvoice(invoiceId) {
     check(res, {
         'is status 200, fetchInvoice': (r) => r.status === 200,
     });
-    console.log("fetchInvoice", res.status)
+
     return res;
 }
 
@@ -79,7 +79,6 @@ export default function () {
 
     const order = createOrder().json()
     const invoice = fetchInvoice(order.invoiceId).json()
-    console.log("payment")
     // cancelOrder(order.orderId)
     payForInvoice(invoice.id)
 }

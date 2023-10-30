@@ -30,7 +30,7 @@ This example is implemented as Monolithic system. Basically it is Three-tier app
 
 
 \subsubsection{Database}
-Due to nature of Monolith as unified system, all data resides inside single database fully leveraging constraints (e.g. foreign keys) and thus ensuring data consistency. Complete database schema is displayed on Diagram~\ref{img:monolith_db_schema} consisting of 7 tables, five of them for entity tables and two for entity relation mapping.
+Due to nature of Monolith as unified system, all data resides inside single database fully leveraging constraints and referential integrity and thus ensuring data consistency. Complete database schema is displayed on Diagram~\ref{img:monolith_db_schema} consisting of 7 tables, five of being entity tables and two entity relation mapping.
 
 \begin{figure}
     \centering
@@ -41,9 +41,9 @@ Due to nature of Monolith as unified system, all data resides inside single data
 
 
 \subsection{Modulith 1}
-This is example using Modular Monolith approach. The original Monolithic application was split into multiple smaller Monoliths called \textit{modules}. The scope of every module depends on the specificity of the project. In this case it nearly corresponds to module per Entity, exception being shopping cart and items, which were merged into single module to demonstrate possibility to have modules with different volume. Package schema and dependency is displayed on Diagram~\ref{img:modulith_package}
+This is example using Modular Monolith approach. The original Monolithic application was split into multiple smaller Monoliths called \textit{modules}. The scope of every module depends on the specificity of the project. In this case it nearly corresponds to module per Entity, exception being shopping cart and items, which were merged into single module to demonstrate possibility to have modules with larger volume. Package schema and dependency is displayed on Diagram~\ref{img:modulith_package}
 
-Every module has the same internal structure as original Monolith plus exposes its API with interface (Diagram~\ref{img:modulith_module_package}). Modules encapsulate its own data storage and there shouldn't be any inter-modules table constraint set in database, although it is possible, it does not make sense from the perspective of logical separation and might be very confusing. It should be possible for every module to use different database or and even different database technology.
+Every module has the same internal structure as original Monolith plus exposes its API with interface (Diagram~\ref{img:modulith_module_package}). Modules encapsulate its own data storage and there shouldn't be any inter-modules table constraint set in database, although it is possible, it does not make sense from the perspective of logical separation and might be very confusing. It should be possible for every module to use different database and even different database technology. In case of the largest module containing shopping cart and items, there are foreign keys constraints preserved since it resides inside single module.
 
 Module can use API of other modules, although this should be limited as much as possible to keep coupling low. Dependency on other modules is defined through usage of interfaces and the actual implementation can be either injects automatically using IoC approach or as in this case just defining top level module, which takes care of initializing individual modules and spinning up HTTP server.
 
@@ -60,7 +60,7 @@ Module can use API of other modules, although this should be limited as much as 
 \end{figure}
 
 \subsubsection{Database}
-Every module encapsulates its own tables completely independent of the rest. Table are the same as for Monolithic example on Diagram~\ref{img:monolith_db_schema}, but relation across modules were removed. The schema consist of four partitions with relations preserve in every partition: first invoice table, second payment, third order table with rel\_item\_order and last tables item, cart and rel\_item\_cart.
+Every module encapsulates its own tables completely independent of the rest. Table are the same as for Monolithic example on Diagram~\ref{img:monolith_db_schema}, but relation across modules were removed. The schema consist of four partitions with relations preserve within partition: first partition consist of invoice table, second of payment table, third order table with rel\_item\_order and last consist of tables item, cart and rel\_item\_cart.
 
 % \begin{figure}
 %     \centering
@@ -72,15 +72,41 @@ Every module encapsulates its own tables completely independent of the rest. Tab
 
 
 \subsection{Benchmark methodology}
-Specifications:
+There are two types of scenarios, which will be measured to get inside into bottles of applications from both IO bound and CPU bound point of views. First one represents more even distributed requests, which should result in even application load (cpu intensive tasks vs IO tasks).
+On the other hand the second should result in more cpu sensitive tasks and stress the system more.
+Benchmark communicates with application via HTTP API and has defined following scenario displayed on Diagram \ref{img:benchmark_flow}.
+Client load list of items (100) and adds one into his shopping cart. This repeats 10 times for first scenario and only once for second, after that he creates order, gets invoice information and pays for it.
+
+\begin{figure}
+    \centering
+    \includesvg[width=0.7\textwidth]{images/benchmark_flow.svg}
+    \caption{Benchmark flow diagram. \label{img:benchmark_flow}}
+\end{figure}
+
+All benchmarks will be executed with following configuration.
 \begin{itemize}
-    \item Golang 1.21.3
-    \item PostgreSQL 14
-    \item Docker 24.0.5
-    \item Uptrace
-    \item Hardware - TODO
+    \item Golang 1.21.3 - programming language used for applications
+    \item PostgreSQL 14 - database
+    \item Docker 24.0.5 - execution environment
+    \item OpenTelemetry - monitoring from within application
+    \item k6 - load testing tool
+    \item Hardware - Macbook Air 13" with M2, 16 GB Ram
+          % TODO this configuration might change for MicroServices -> we will see
+    \item Every application have total resource restrictions to 1~CPU and 50~MB of Ram
 \end{itemize}
 
+\subsection{Benchmark results (Alfa)}
+
+\begin{tabular}{ |p{3cm}||p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
+    \hline
+    \multicolumn{5}{|c|}{Benchmark results scenario 1}      \\
+    \hline
+    Architecture & rps         & avg     & p(90)   & p(95)  \\
+    \hline
+    Monolith     & 35.9\,req/s & 270\,ms & 699\,ms & 1.6\,s \\
+    Modulith     & 34.7\,req/s & 281\,ms & 682\,ms & 1.8\,s \\
+    \hline
+\end{tabular}
 % \subsection{Performance}
 
 % latency
