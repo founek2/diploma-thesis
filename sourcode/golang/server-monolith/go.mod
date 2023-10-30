@@ -3,7 +3,9 @@ module monolith
 go 1.21
 
 require (
+	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.8.0
+	github.com/joho/godotenv v1.5.1
 	github.com/uptrace/bun/driver/pgdriver v1.1.16
 	github.com/uptrace/bun/extra/bundebug v1.1.16
 	github.com/uptrace/uptrace-go v1.20.0
@@ -15,7 +17,6 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/uuid v1.3.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect

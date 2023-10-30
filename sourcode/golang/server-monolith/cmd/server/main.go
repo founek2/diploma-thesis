@@ -4,11 +4,13 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 
 	sw "monolith/server"
 	"monolith/server/database"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/uptrace/uptrace-go/uptrace"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -24,12 +26,12 @@ type App struct {
 func (a *App) Initialize() {
 	// Configure OpenTelemetry with sensible defaults.
 	uptrace.ConfigureOpentelemetry(
-		uptrace.WithDSN("http://project2_secret_token@192.168.10.88:14317/2"),
+		uptrace.WithDSN(os.Getenv("UPTRACE_DSN")),
 		uptrace.WithServiceName("monolith"),
 		uptrace.WithServiceVersion("1.0.0"),
 	)
 
-	a.Db = database.Initialize("postgres://postgres:postgres@localhost:5432/monolith?sslmode=disable")
+	a.Db = database.Initialize(os.Getenv("DATABASE_URI"))
 	a.Tracer = otel.Tracer("server")
 	a.Router = sw.NewRouter(&a.Db, a.Tracer)
 }
@@ -43,6 +45,11 @@ func (a *App) Run(addr string) {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	var a = App{ctx: context.Background()}
 	a.Initialize()
 	a.Run("0.0.0.0:8080")
