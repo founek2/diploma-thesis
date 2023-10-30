@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 
 	cartModule "modulith/modules/cart"
 	invoiceModule "modulith/modules/invoice"
@@ -13,6 +14,7 @@ import (
 	"modulith/shared/middleware"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/uptrace/uptrace-go/uptrace"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -23,13 +25,6 @@ type App struct {
 	Router *mux.Router
 	Tracer trace.Tracer
 }
-
-// func Middleware(h http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		middleware.AddTracing(r.)
-// 			h.ServeHTTP(w, r)
-// 	})
-// }
 
 func registerRoutes(routes shared.Routes, router *mux.Router, tracer trace.Tracer) {
 	for _, route := range routes {
@@ -49,7 +44,7 @@ func registerRoutes(routes shared.Routes, router *mux.Router, tracer trace.Trace
 func (a *App) Initialize() {
 	// Configure OpenTelemetry with sensible defaults.
 	uptrace.ConfigureOpentelemetry(
-		uptrace.WithDSN("http://project2_secret_token@192.168.10.88:14317/2"),
+		uptrace.WithDSN(os.Getenv("UPTRACE_DSN")),
 		uptrace.WithServiceName("monolith"),
 		uptrace.WithServiceVersion("1.0.0"),
 	)
@@ -63,16 +58,18 @@ func (a *App) Initialize() {
 	// var itemApi, itemRoutes = itemModule.Initialize("postgres://modulith:modulith@192.168.10.88:5432/modulith?sslmode=disable")
 	// registerRoutes(itemRoutes, a.Router, a.Tracer)
 
-	var cartApi, cartRoutes = cartModule.Initialize("postgres://modulith:modulith@192.168.10.88:5432/modulith?sslmode=disable")
+	var databaseUri = os.Getenv("DATABASE_URI")
+
+	var cartApi, cartRoutes = cartModule.Initialize(databaseUri)
 	registerRoutes(cartRoutes, a.Router, a.Tracer)
 
-	var invoiceApi, invoiceRoutes = invoiceModule.Initialize("postgres://modulith:modulith@192.168.10.88:5432/modulith?sslmode=disable")
+	var invoiceApi, invoiceRoutes = invoiceModule.Initialize(databaseUri)
 	registerRoutes(invoiceRoutes, a.Router, a.Tracer)
 
-	var _, orderRoutes = orderModule.Initialize("postgres://modulith:modulith@192.168.10.88:5432/modulith?sslmode=disable", cartApi, cartApi, invoiceApi)
+	var _, orderRoutes = orderModule.Initialize(databaseUri, cartApi, cartApi, invoiceApi)
 	registerRoutes(orderRoutes, a.Router, a.Tracer)
 
-	var _, paymentRoutes = paymentModule.Initialize("postgres://modulith:modulith@192.168.10.88:5432/modulith?sslmode=disable", invoiceApi)
+	var _, paymentRoutes = paymentModule.Initialize(databaseUri, invoiceApi)
 	registerRoutes(paymentRoutes, a.Router, a.Tracer)
 }
 
@@ -84,7 +81,12 @@ func (a *App) Run(addr string) {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	var a = App{ctx: context.Background()}
 	a.Initialize()
-	a.Run("0.0.0.0:8080")
+	a.Run("0.0.0.0:" + os.Getenv("PORT"))
 }

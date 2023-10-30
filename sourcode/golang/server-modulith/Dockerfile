@@ -1,14 +1,15 @@
-FROM golang:1.10 AS build
+FROM golang:1.21 AS build
 WORKDIR /go/src
-COPY go ./go
-COPY main.go .
 
-ENV CGO_ENABLED=0
-RUN go get -d -v ./...
+# Install dependencies
+COPY go.mod go.sum .
+RUN go mod download
 
-RUN go build -a -installsuffix cgo -o swagger .
+# Copy source code
+COPY . .
 
-FROM scratch AS runtime
-COPY --from=build /go/src/swagger ./
+# Run build
+RUN go build cmd/server/main.go
+
 EXPOSE 8080/tcp
-ENTRYPOINT ["./swagger"]
+ENTRYPOINT ["./main"]

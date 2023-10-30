@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"monolith/server/database"
 	"net/http"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -46,8 +45,4 @@ func AddTracing(method string, path string) func(next http.Handler, tracer trace
 			main.SetAttributes(attribute.Int("http.status_code", lrw.statusCode))
 		})
 	}
-}
-
-func GetDb(ctx context.Context) *database.Database {
-	return ctx.Value("db").(*database.Database)
 }

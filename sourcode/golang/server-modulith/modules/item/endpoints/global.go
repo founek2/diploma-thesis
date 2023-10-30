@@ -2,7 +2,7 @@ package endpoints
 
 import (
 	"encoding/json"
-	"monolith/server/getters"
+	"modulith/shared/getters"
 	"net/http"
 
 	"go.opentelemetry.io/otel/attribute"

@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:0.70.0
+    restart: on-failure
+    volumes:
+      - ./otel-collector.yaml:/etc/otelcol-contrib/config.yaml
+
+  postgres:
+    image: postgres:15-alpine
+    restart: on-failure
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: modulith
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d modulith']
+      interval: 1s
+      timeout: 1s
+      retries: 30
+    volumes:
+      - './volumes/postgres:/var/lib/postgresql/data/pgdata'
+    ports:
+      - '5432:5432'
+
+  server-modulith:
+    build: "../../server-modulith/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/modulith?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+    ports:
+      - 8080:8080
