@@ -32,10 +32,22 @@ var routes = shared.Routes{
 		HandlerFunc: Index,
 	},
 	shared.Route{
+		Name:        "CreateInvoice",
+		Method:      strings.ToUpper("Post"),
+		Pattern:     "/api/v1/invoice",
+		HandlerFunc: endpoints.CreateInvoice,
+	},
+	shared.Route{
 		Name:        "GetInvoiceById",
 		Method:      strings.ToUpper("Get"),
 		Pattern:     "/api/v1/invoice/{invoiceId}",
 		HandlerFunc: endpoints.GetInvoiceById,
+	},
+	shared.Route{
+		Name:        "GetInvoiceById",
+		Method:      strings.ToUpper("Patch"),
+		Pattern:     "/api/v1/invoice/{invoiceId}",
+		HandlerFunc: endpoints.UpdateInvoiceById,
 	},
 	shared.Route{
 		Name:        "GetInvoicePdfById",

@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	cartModule "modulith/modules/cart"
 	invoiceModule "modulith/modules/invoice"
+	invoiceClient "modulith/modules/invoice-client"
 	orderModule "modulith/modules/order"
 	paymentModule "modulith/modules/payment"
 	"modulith/shared"
@@ -43,34 +45,61 @@ func registerRoutes(routes shared.Routes, router *mux.Router, tracer trace.Trace
 
 func (a *App) Initialize() {
 	// Configure OpenTelemetry with sensible defaults.
-	uptrace.ConfigureOpentelemetry(
-		uptrace.WithDSN(os.Getenv("UPTRACE_DSN")),
-		uptrace.WithServiceName("monolith"),
-		uptrace.WithServiceVersion("1.0.0"),
-	)
 
 	a.Router = mux.NewRouter().StrictSlash(true)
 
-	// a.Db = database.Initialize("postgres://monolith:monolith@192.168.10.88:5432/monolith?sslmode=disable")
 	a.Tracer = otel.Tracer("server")
-	// a.Router = sw.NewRouter(&a.Db, a.Tracer)
-
-	// var itemApi, itemRoutes = itemModule.Initialize("postgres://modulith:modulith@192.168.10.88:5432/modulith?sslmode=disable")
-	// registerRoutes(itemRoutes, a.Router, a.Tracer)
 
 	var databaseUri = os.Getenv("DATABASE_URI")
 
-	var cartApi, cartRoutes = cartModule.Initialize(databaseUri)
-	registerRoutes(cartRoutes, a.Router, a.Tracer)
+	if os.Getenv("MODE") == "invoice-server" {
+		uptrace.ConfigureOpentelemetry(
+			uptrace.WithDSN(os.Getenv("UPTRACE_DSN")),
+			uptrace.WithServiceName("modulith-invoice-server"),
+			uptrace.WithServiceVersion("1.0.0"),
+		)
 
-	var invoiceApi, invoiceRoutes = invoiceModule.Initialize(databaseUri)
-	registerRoutes(invoiceRoutes, a.Router, a.Tracer)
+		var _, invoiceRoutes = invoiceModule.Initialize(databaseUri)
+		registerRoutes(invoiceRoutes, a.Router, a.Tracer)
+	} else if os.Getenv("MODE") == "invoice-client-server" {
+		uptrace.ConfigureOpentelemetry(
+			uptrace.WithDSN(os.Getenv("UPTRACE_DSN")),
+			uptrace.WithServiceName("modulith-invoice-client-server"),
+			uptrace.WithServiceVersion("1.0.0"),
+		)
 
-	var _, orderRoutes = orderModule.Initialize(databaseUri, cartApi, cartApi, invoiceApi)
-	registerRoutes(orderRoutes, a.Router, a.Tracer)
+		var cartApi, cartRoutes = cartModule.Initialize(databaseUri)
+		registerRoutes(cartRoutes, a.Router, a.Tracer)
 
-	var _, paymentRoutes = paymentModule.Initialize(databaseUri, invoiceApi)
-	registerRoutes(paymentRoutes, a.Router, a.Tracer)
+		var cfg = invoiceClient.NewConfiguration()
+		cfg.BasePath = fmt.Sprintf("%s/api/v1", os.Getenv("INVOICE_HOST"))
+		println("basePath", cfg.BasePath)
+		var client = invoiceClient.NewAPIClient(cfg)
+
+		var _, orderRoutes = orderModule.Initialize(databaseUri, cartApi, cartApi, client.InvoiceApi)
+		registerRoutes(orderRoutes, a.Router, a.Tracer)
+
+		var _, paymentRoutes = paymentModule.Initialize(databaseUri, client.InvoiceApi)
+		registerRoutes(paymentRoutes, a.Router, a.Tracer)
+	} else {
+		uptrace.ConfigureOpentelemetry(
+			uptrace.WithDSN(os.Getenv("UPTRACE_DSN")),
+			uptrace.WithServiceName("modulith"),
+			uptrace.WithServiceVersion("1.0.0"),
+		)
+
+		var cartApi, cartRoutes = cartModule.Initialize(databaseUri)
+		registerRoutes(cartRoutes, a.Router, a.Tracer)
+
+		var invoiceApi, invoiceRoutes = invoiceModule.Initialize(databaseUri)
+		registerRoutes(invoiceRoutes, a.Router, a.Tracer)
+
+		var _, orderRoutes = orderModule.Initialize(databaseUri, cartApi, cartApi, invoiceApi)
+		registerRoutes(orderRoutes, a.Router, a.Tracer)
+
+		var _, paymentRoutes = paymentModule.Initialize(databaseUri, invoiceApi)
+		registerRoutes(paymentRoutes, a.Router, a.Tracer)
+	}
 }
 
 func (a *App) Run(addr string) {

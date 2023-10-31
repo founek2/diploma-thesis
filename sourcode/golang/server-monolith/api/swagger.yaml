@@ -38,9 +38,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Item'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Item'
   /item/{itemId}:
     get:
       tags:
@@ -60,9 +57,6 @@ paths:
           description: Successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Item'
-            application/xml:
               schema:
                 $ref: '#/components/schemas/Item'
         '400':
@@ -89,11 +83,6 @@ paths:
           description: successful operation
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Cart'
-            application/xml:
               schema:
                 type: array
                 items:
@@ -127,11 +116,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Cart'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Cart'
         '400':
           description: Invalid ID supplied
         '404':
@@ -154,11 +138,6 @@ paths:
           description: successful operation
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Invoice'
-            application/xml:
               schema:
                 type: array
                 items:
@@ -190,11 +169,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Order'
         '400':
           description: Invalid ID supplied
         '404':
@@ -222,6 +196,45 @@ paths:
           description: order not found
         '405':
           description: unable to cancel order
+      security:
+        - api_key: []
+
+  /payment/{paymentId}:
+    post:
+      tags:
+        - payment
+      summary: Pay for specific invoice
+      operationId: payForInvoice
+      parameters:
+        - name: paymentId
+          in: path
+          description: ID of payment
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                creditCardNumber:
+                  type: integer
+                amount:
+                  type: number
+                  format: double
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        '404':
+          description: Order not found
       security:
         - api_key: []
 
@@ -259,11 +272,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Payment'
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Payment'
         '404':
           description: Order not found
       security:
@@ -289,9 +297,6 @@ paths:
           description: successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Invoice'
-            application/xml:
               schema:
                 $ref: '#/components/schemas/Invoice'
         '400':

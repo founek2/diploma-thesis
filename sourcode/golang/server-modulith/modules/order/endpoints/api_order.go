@@ -88,14 +88,17 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	invoice, err := invoiceApi.CreateInvoice(ctx, order.Id, order.Price)
 	if err != nil {
 		failUnexpectedError(err, w, r)
+		return
 	}
 
+	println("Got invoice", invoice.InvoiceId.String())
 	// ------
 
 	order.Status = "processed"
 	_, err = db.UpdateOrder(ctx, order)
 	if err != nil {
 		failUnexpectedError(err, w, r)
+		return
 	}
 
 	var orderResponse = struct {

@@ -19,7 +19,7 @@ import (
 type Order struct {
 	bun.BaseModel `bun:"table:order,alias:o"`
 
-	Id int64 `json:"-" bun:"id,pk,autoincrement"`
+	Id int64 `json:"seqId" bun:"id,pk,autoincrement"`
 
 	OrderId uuid.UUID `json:"id,omitempty" bun:"type:uuid,default:uuid_generate_v4()"`
 
