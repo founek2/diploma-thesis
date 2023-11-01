@@ -4,6 +4,7 @@ services:
   otelcol:
     image: otel/opentelemetry-collector-contrib:0.70.0
     restart: on-failure
+    privileged: true
     volumes:
       - ./otel-collector.yaml:/etc/otelcol-contrib/config.yaml
 
@@ -38,7 +39,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '0.5'
           memory: 50M
         reservations:
           cpus: '0.5'
@@ -58,13 +59,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '0.5'
           memory: 50M
         reservations:
           cpus: '0.5'
           memory: 20M
-    ports:
-      - 8081:8080
   server-invoice2:
     build: "../../server-modulith/"
     environment:
@@ -77,13 +76,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '0.5'
           memory: 50M
         reservations:
           cpus: '0.5'
           memory: 20M
-    ports:
-      - 8083:8080
   server-invoice3:
     build: "../../server-modulith/"
     environment:
@@ -96,13 +93,96 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '0.5'
           memory: 50M
         reservations:
           cpus: '0.5'
           memory: 20M
-    ports:
-      - 8084:8080
+  server-invoice4:
+    build: "../../server-modulith/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/modulith?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: invoice-server
+      VIRTUAL_PATH: "~^/api/v1/invoice"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+  server-invoice5:
+    build: "../../server-modulith/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/modulith?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: invoice-server
+      VIRTUAL_PATH: "~^/api/v1/invoice"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+  server-invoice6:
+    build: "../../server-modulith/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/modulith?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: invoice-server
+      VIRTUAL_PATH: "~^/api/v1/invoice"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+  server-invoice7:
+    build: "../../server-modulith/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/modulith?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: invoice-server
+      VIRTUAL_PATH: "~^/api/v1/invoice"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+  server-invoice8:
+    build: "../../server-modulith/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/modulith?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: invoice-server
+      VIRTUAL_PATH: "~^/api/v1/invoice"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
 
   nginx:
     image: jwilder/nginx-proxy

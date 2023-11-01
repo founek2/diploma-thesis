@@ -31,13 +31,20 @@ services:
       DATABASE_URI: postgres://postgres:postgres@postgres:5432/monolith?sslmode=disable
       UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
       PORT: 8080
+      VIRTUAL_HOST: "localhost,nginx"
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '0.5'
           memory: 50M
         reservations:
           cpus: '0.5'
           memory: 20M
+
+  nginx:
+    image: jwilder/nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - "./volumes/nginx/:/etc/nginx/conf.d/"
     ports:
-      - 8080:8080
+      - 127.0.0.1:8080:80

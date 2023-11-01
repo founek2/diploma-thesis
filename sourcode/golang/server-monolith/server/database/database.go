@@ -134,6 +134,23 @@ func (db Database) RemoveItemFromCart(ctx context.Context, item *Item, cart *Car
 	return &model, err
 }
 
+func (db Database) RemoveCart(ctx context.Context, cart *Cart) (*Cart, error) {
+	_, err := db.NewDelete().
+		Model(&RelItemCart{}).
+		Where("cart_seq_id = ?", cart.Id).
+		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = db.NewDelete().
+		Model(cart).
+		WherePK().
+		Exec(ctx)
+
+	return cart, err
+}
+
 func (db Database) UpdateOrder(ctx context.Context, order *Order) (*Order, error) {
 	_, err := db.NewUpdate().Model(order).WherePK().Exec(ctx)
 

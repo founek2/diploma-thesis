@@ -1,0 +1,251 @@
+version: '3'
+
+services:
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:0.70.0
+    restart: on-failure
+    volumes:
+      - ./otel-collector.yaml:/etc/otelcol-contrib/config.yaml
+
+  postgres:
+    image: postgres:15-alpine
+    restart: on-failure
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: microservices
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d microservices']
+      interval: 1s
+      timeout: 1s
+      retries: 30
+    volumes:
+      - './volumes/postgres:/var/lib/postgresql/data/pgdata'
+    ports:
+      - '5432:5432'
+
+  server-microservices-cart:
+    build: "../../server-microservices/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: cart
+      API_HOST: http://nginx:80
+      VIRTUAL_PATH: "~^/api/v1/cart"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+  server-microservices-invoice1:
+    build: "../../server-microservices/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: invoice
+      API_HOST: http://nginx:80
+      VIRTUAL_PATH: "~^/api/v1/invoice"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+  server-microservices-invoice2:
+    build: "../../server-microservices/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: invoice
+      API_HOST: http://nginx:80
+      VIRTUAL_PATH: "~^/api/v1/invoice"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+  # server-microservices-invoice3:
+  #   build: "../../server-microservices/"
+  #   environment:
+  #     DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+  #     UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+  #     PORT: 8080
+  #     MODE: invoice
+  #     API_HOST: http://nginx:80
+  #     VIRTUAL_PATH: "~^/api/v1/invoice"
+  #     VIRTUAL_HOST: "localhost,nginx"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 50M
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 20M
+  # server-microservices-invoice4:
+  #   build: "../../server-microservices/"
+  #   environment:
+  #     DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+  #     UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+  #     PORT: 8080
+  #     MODE: invoice
+  #     API_HOST: http://nginx:80
+  #     VIRTUAL_PATH: "~^/api/v1/invoice"
+  #     VIRTUAL_HOST: "localhost,nginx"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 50M
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 20M
+  # server-microservices-invoice5:
+  #   build: "../../server-microservices/"
+  #   environment:
+  #     DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+  #     UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+  #     PORT: 8080
+  #     MODE: invoice
+  #     API_HOST: http://nginx:80
+  #     VIRTUAL_PATH: "~^/api/v1/invoice"
+  #     VIRTUAL_HOST: "localhost,nginx"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 50M
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 20M
+  # server-microservices-invoice6:
+  #   build: "../../server-microservices/"
+  #   environment:
+  #     DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+  #     UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+  #     PORT: 8080
+  #     MODE: invoice
+  #     API_HOST: http://nginx:80
+  #     VIRTUAL_PATH: "~^/api/v1/invoice"
+  #     VIRTUAL_HOST: "localhost,nginx"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 50M
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 20M
+  # server-microservices-invoice7:
+  #   build: "../../server-microservices/"
+  #   environment:
+  #     DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+  #     UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+  #     PORT: 8080
+  #     MODE: invoice
+  #     API_HOST: http://nginx:80
+  #     VIRTUAL_PATH: "~^/api/v1/invoice"
+  #     VIRTUAL_HOST: "localhost,nginx"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 50M
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 20M
+  # server-microservices-invoice8:
+  #   build: "../../server-microservices/"
+  #   environment:
+  #     DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+  #     UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+  #     PORT: 8080
+  #     MODE: invoice
+  #     API_HOST: http://nginx:80
+  #     VIRTUAL_PATH: "~^/api/v1/invoice"
+  #     VIRTUAL_HOST: "localhost,nginx"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 50M
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 20M
+  server-microservices-item:
+    build: "../../server-microservices/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: item
+      API_HOST: http://nginx:80
+      VIRTUAL_PATH: "~^/api/v1/item"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+  server-microservices-order:
+    build: "../../server-microservices/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: order
+      API_HOST: http://nginx:80
+      VIRTUAL_PATH: "~^/api/v1/order"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+  server-microservices-payment:
+    build: "../../server-microservices/"
+    environment:
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/microservices?sslmode=disable
+      UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
+      PORT: 8080
+      MODE: payment
+      API_HOST: http://nginx:80
+      VIRTUAL_PATH: "~^/api/v1/payment"
+      VIRTUAL_HOST: "localhost,nginx"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.5'
+          memory: 20M
+
+  nginx:
+    image: jwilder/nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - "./volumes/nginx/:/etc/nginx/conf.d/"
+    ports:
+      - 127.0.0.1:8080:80

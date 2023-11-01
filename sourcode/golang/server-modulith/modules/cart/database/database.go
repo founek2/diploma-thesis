@@ -94,7 +94,15 @@ func (db Database) RemoveItemFromCart(ctx context.Context, itemId int64, cart *C
 
 func (db Database) RemoveCart(ctx context.Context, cart *Cart) (*Cart, error) {
 	_, err := db.NewDelete().
-		Model(&cart).
+		Model(&RelItemCart{}).
+		Where("cart_seq_id = ?", cart.Id).
+		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = db.NewDelete().
+		Model(cart).
 		WherePK().
 		Exec(ctx)
 

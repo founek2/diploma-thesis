@@ -81,6 +81,13 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	order, err = db.CreateOrder(ctx, order)
 	if err != nil {
 		failUnexpectedError(err, w, r)
+		return
+	}
+
+	_, err = cartApi.RemoveShoppingCart(ctx, cart)
+	if err != nil {
+		failUnexpectedError(err, w, r)
+		return
 	}
 
 	// ---- CPU usage
@@ -114,6 +121,16 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetOrder(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var db = middleware.GetDb(ctx)
+	var params = mux.Vars(r)
+
+	var order, err = db.GetOrderByOrderId(ctx, params["orderId"])
+	if err != nil {
+		failUnexpectedError(err, w, r)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	jsonResponse(order, w)
 }

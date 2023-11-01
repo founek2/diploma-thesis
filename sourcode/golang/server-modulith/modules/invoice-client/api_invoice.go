@@ -28,194 +28,76 @@ var (
 type InvoiceApiService service
 
 /*
-InvoiceApiService Generate invoice for order
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param optional nil or *InvoiceApiCreateInvoiceOpts - Optional Parameters:
-     * @param "Body" (optional.Interface of Order) -
-@return []Invoice
+ InvoiceApiService Generate invoice for order
+  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+  * @param optional nil or *InvoiceApiCreateInvoiceOpts - Optional Parameters:
+	  * @param "Body" (optional.Interface of Order) -
+ @return []Invoice
 */
 
 type InvoiceApiCreateInvoiceOpts struct {
 	Body optional.Interface
 }
 
+type Order struct {
+	Price float64 `json:"price"`
+	Id    int64   `json:"id"`
+}
+
 func (a *InvoiceApiService) CreateInvoice(ctx context.Context, orderId int64, price float64) (*db.Invoice, error) {
-	type Order struct {
-		Price float64 `json:"price"`
-		Id    int64   `json:"id"`
+	url := a.client.cfg.BasePath + "/invoice"
+
+	var invoice = new(db.Invoice)
+	var body = &Order{
+		Id:    orderId,
+		Price: price,
 	}
 
-	var (
-		localVarHttpMethod             = strings.ToUpper("Post")
-		localVarPostBody   interface{} = &Order{
-			Id:    orderId,
-			Price: price,
-		}
-		localVarFileName    string
-		localVarFileBytes   []byte
-		localVarReturnValue db.Invoice
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/invoice"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json", "application/xml"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	var _, err = a.doCallHttp(ctx, url, "Post", body, invoice)
 	if err != nil {
-		return &localVarReturnValue, err
+		return nil, err
 	}
 
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return &localVarReturnValue, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return &localVarReturnValue, err
-	}
-
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-		if err == nil {
-			return &localVarReturnValue, err
-		}
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-		if localVarHttpResponse.StatusCode == 200 {
-			var v []db.Invoice
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return &localVarReturnValue, newErr
-			}
-			newErr.model = v
-			return &localVarReturnValue, newErr
-		}
-		return &localVarReturnValue, newErr
-	}
-
-	return &localVarReturnValue, nil
+	return invoice, nil
 }
 
 func (a *InvoiceApiService) GetInvoiceByInvoiceId(ctx context.Context, invoiceId string) (*db.Invoice, error) {
-	var (
-		localVarHttpMethod  = strings.ToUpper("Get")
-		localVarPostBody    interface{}
-		localVarFileName    string
-		localVarFileBytes   []byte
-		localVarReturnValue db.Invoice
-	)
+	url := a.client.cfg.BasePath + "/invoice/" + invoiceId
 
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/invoice/" + invoiceId
-	println("client", localVarPath)
+	var invoice = new(db.Invoice)
 
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json", "application/xml"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	var _, err = a.doCallHttp(ctx, url, "Get", nil, invoice)
 	if err != nil {
-		return &localVarReturnValue, err
+		return nil, err
 	}
 
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return &localVarReturnValue, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return &localVarReturnValue, err
-	}
-
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-		if err == nil {
-			return &localVarReturnValue, err
-		}
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-		if localVarHttpResponse.StatusCode == 200 {
-			var v []db.Invoice
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return &localVarReturnValue, newErr
-			}
-			newErr.model = v
-			return &localVarReturnValue, newErr
-		}
-		return &localVarReturnValue, newErr
-	}
-
-	return &localVarReturnValue, nil
+	return invoice, nil
 }
 
 func (a *InvoiceApiService) UpdateInvoice(ctx context.Context, invoice *db.Invoice) (*db.Invoice, error) {
+	url := a.client.cfg.BasePath + "/invoice/" + invoice.InvoiceId.String()
+
+	var updatedInvoice = new(db.Invoice)
+
+	var _, err = a.doCallHttp(ctx, url, "Patch", invoice, updatedInvoice)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedInvoice, nil
+}
+
+func (a *InvoiceApiService) doCallHttp(ctx context.Context, path string, method string, body interface{}, output interface{}) (*db.Invoice, error) {
 	var (
-		localVarHttpMethod              = strings.ToUpper("Patch")
-		localVarPostBody    interface{} = invoice
+		localVarHttpMethod              = strings.ToUpper(method)
+		localVarPostBody    interface{} = body
 		localVarFileName    string
 		localVarFileBytes   []byte
 		localVarReturnValue db.Invoice
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/invoice/" + invoice.InvoiceId.String()
+	localVarPath := path
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -257,7 +139,7 @@ func (a *InvoiceApiService) UpdateInvoice(ctx context.Context, invoice *db.Invoi
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+		err = a.client.decode(&output, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		if err == nil {
 			return &localVarReturnValue, err
 		}
@@ -267,16 +149,6 @@ func (a *InvoiceApiService) UpdateInvoice(ctx context.Context, invoice *db.Invoi
 		newErr := GenericSwaggerError{
 			body:  localVarBody,
 			error: localVarHttpResponse.Status,
-		}
-		if localVarHttpResponse.StatusCode == 200 {
-			var v []db.Invoice
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return &localVarReturnValue, newErr
-			}
-			newErr.model = v
-			return &localVarReturnValue, newErr
 		}
 		return &localVarReturnValue, newErr
 	}

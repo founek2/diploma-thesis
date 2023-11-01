@@ -76,6 +76,13 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	order, err = db.CreateOrder(ctx, order)
 	if err != nil {
 		failUnexpectedError(err, w, r)
+		return
+	}
+
+	_, err = db.RemoveCart(ctx, cart)
+	if err != nil {
+		failUnexpectedError(err, w, r)
+		return
 	}
 
 	// ---- CPU usage
