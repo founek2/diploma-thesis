@@ -19,6 +19,8 @@ PostgreSQL database was chosen as data storage, since SQL databases are more kno
     \caption{Diagram describes client flow of application. First session is created for client, then he load items and add all he wants into shopping cart. Later client places order, invoice is generated in background and client can cancel the order or pay for it. To add more cpu sensitive task, the generation of invoice generates pdf and also calculates 41st Fibonacci Number. \label{img:app_activity_flow}}
 \end{figure}
 
+For scaling and running multiple instances, nginx will be used as reverse proxy as well as load balancer.
+
 \subsection{Monolith}
 This example is implemented as Monolithic system. Basically it is Three-tier application: presentation (HTTP API), application and data (database). Diagram \ref{img:monolith_db_schema} describes internal application package structure. \textit{Routes} package contains path mapping for endpoints handlers defined in \textit{endpoints}. Handlers contain simple logic definition, more complex logic resides in \textit{services} and data manipulation around database is contained in \textit{database} package.
 
@@ -83,30 +85,70 @@ Client load list of items (100) and adds one into his shopping cart. This repeat
     \caption{Benchmark flow diagram. \label{img:benchmark_flow}}
 \end{figure}
 
-All benchmarks will be executed with following configuration.
+All benchmarks results will originate from running 10 parallel tests and 100 iterations with following configuration.
 \begin{itemize}
     \item Golang 1.21.3 - programming language used for applications
     \item PostgreSQL 14 - database
     \item Docker 24.0.5 - execution environment
     \item OpenTelemetry - monitoring from within application
     \item k6 - load testing tool
-    \item Hardware - Macbook Air 13" with M2, 16 GB Ram
+    \item Hardware - Macbook Air 13" with M2, 16 GB Ram, 6 CPU cores assigned to Docker
           % TODO this configuration might change for MicroServices -> we will see
-    \item Every application/service instance has resource restrictions to 1~CPU and 50~MB of Ram
-\end{itemize}
+    \item Every service instance has following reserved resources: 0.5~CPU and 50~MB of Ram
+\end{itemize}mo
 
 \subsection{Benchmark results (Alfa)}
 
-\begin{tabular}{ |p{3cm}||p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
-    \hline
-    \multicolumn{5}{|c|}{Benchmark results scenario 1}      \\
-    \hline
-    Architecture & rps         & avg     & p(90)   & p(95)  \\
-    \hline
-    Monolith     & 35.9\,req/s & 270\,ms & 699\,ms & 1.6\,s \\
-    Modulith     & 34.7\,req/s & 281\,ms & 682\,ms & 1.8\,s \\
-    \hline
-\end{tabular}
+In Table \ref{table:benchmark_baseline} are results of benchmark which will act as baseline. Both Monolith and Modulith were running in single instance with 1~CPU assigned. Even though both are running as single process, there is already little overhead visible due to more complex internal structure and more database connection pools.
+
+\begin{table}
+    \begin{tabular}{ |p{3cm}||p{3cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
+        \hline
+        \multicolumn{5}{|c|}{Benchmark results scenario 1}                   \\
+        \hline
+        Architecture  & Resources & rps        & avg     & p(90)   & p(95)   \\
+        \hline
+        Monolith      & 0.5\,CPU  & 6.8\,req/s & 1.43\,s & 1.2\,s  & 14.4\,s \\
+        Modulith      & 0.5\,CPU  & 7.8\,req/s & 1.25\,s & 1.59\,s & 9.18\,s \\
+        Microservices & 2.5\,CPU  & 6.9\,req/s & 1.43\,s & 1.1\,s  & 17.9\,s \\
+        \hline
+    \end{tabular}
+    \caption{Table containing benchmark results comparing Monolith, Modulith and Microservices. Microservices and much more CPU reserved, since it consist of 5 services (every singe one has 0.5~CPU assigned).\label{table:benchmark_baseline}}
+\end{table}
+
+The biggest bottleneck of this benchmark is processing order due to CPU bound task. To scale Monolith we would have to run more instances, which for big systems is very resource demanding. On the other hand for modulith systems it is much easier due to its modular structure. The cpu bound task is contained inside invoice package, which can be moved into separate lightweight service and scaled on demand. Other packages are depending just on interface, so it is just matter of providing necessary communication implementation. Depending on technology it can be based on RPC like gRPC or just simple HTTP client/server and the implementation can be fully automatically generated (the client and the server) if all objects are serializable.
+
+In this example, invoice package was moved into separated service implementing HTTP server. HTTP client is than passed in main server to whoever module required the invoice interface. The same benchmark was now run one, two and three instances of invoice service and results can be seen in Table~\ref{table:benchmark_modulith_instances}. There is no difference between Modulith and Modulith with single invoice service instance, but having the invoice service scaled to two instances, it has doubled the speed. Adding more instances scales linearly until the main bottleneck becomes IO bound task during payment.
+
+\begin{table}
+    \begin{tabular}{ |p{3cm}||p{3cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
+        \hline
+        \multicolumn{5}{|c|}{Benchmark results scenario 1}                         \\
+        \hline
+        Architecture       & Resources & rps         & avg     & p(90)   & p(95)   \\
+        \hline
+        Modulith unified   & 0.5\,CPU  & 7.8\,req/s  & 1.25\,s & 1.59\,s & 9.1\,s  \\
+        \rowcolor{Gray}
+        Modulith + 1       & 1.0\,CPU  & 7.3\,req/s  & 1.35\,s & 1.0\,s  & 18.6\,s \\
+        \rowcolor{Gray}
+        Microservices      & 2.5\,CPU  & 6.9\,req/s  & 1.43\,s & 1.1\,s  & 17.9\,s \\
+        Modulith + 2       & 1.5\,CPU  & 18.8\,req/s & 510\,ms & 605\,ms & 3.1\,s  \\
+        Microservices  + 1 & 3.0\,CPU  & 21.4\,req/s & 441\,s  & 612\,ms & 3.9\,s  \\
+        \rowcolor{Gray}
+        Modulith + 4       & 2.5\,CPU  & 44.2\,req/s & 204\,ms & 521\,ms & 1.2\,s  \\
+        \rowcolor{Gray}
+        Microservices  + 3 & 4.0\,CPU  & 58.3\,req/s & 165\,ms & 513\,ms & 1.0\,s  \\
+        Modulith + 8       & 4.5\,CPU  & 71.6\,req/s & 133\,ms & 512\,ms & 0.8\,s  \\
+        Microservices  + 7 & 6.0\,CPU  & 66.4\,req/s & 142\,ms & 519\,ms & 0.9\,s  \\
+        \hline
+    \end{tabular}
+    \caption{Table containing benchmark for Modulith and Microservices with module invoice moved into separate service running in multiple number of instances (indicated by number after plus sign, microservices has number by one lower, since by default there is already invoice service running).\label{table:benchmark_modulith_instances}}
+\end{table}
+
+% TODO for microservice benchmark look into CPU usage vs modulith cpu usage
+% there seems to be big spike
+
+
 % \subsection{Performance}
 
 % latency
