@@ -1,4 +1,5 @@
 \section{Microservices}
+\label{section:microservices}
 Many people consider this architecture as solution for every problem. What architecture for new project? Microservices. Is your application slow? Convert it to Microservices. Experiencing slow development? Microservices are the solution. Fair enough, it really does change the game and there are definitely projects where it is the best possible solution. Although in my experience, people tend to use this architecture carelessly as the only correct solution, ignoring its disadvantages, and there are definitely projects where for example monolith would be more suited for task and save a lot of many and time. So what exactly is it?
 
 \begin{quote}
@@ -10,13 +11,20 @@ Many people consider this architecture as solution for every problem. What archi
 
 From a technology viewpoint, microservices expose the business capabilities that they encapsulate via one or more network endpoints \cite{MON_TO_MS_MICROSERVICE} (for example, a queue or a REST API \cite{BUILDING_MS_WHAT_ARE}, as shown in Figure~\ref{img:microservices_basic}). Microservices communicate with each other via these networks — making them a form of distributed system. They also encapsulate data storage and retrieval, exposing data, via well-defined interfaces. So databases are hidden inside the service boundary. \cite{MON_TO_MS_MICROSERVICE}
 
+Compared to the discussed Modulith in section \ref{section:modulith}, Microservices are taking the whole modular concept one step further. Instead of primarily building the application around modules with possibility to extract module into separate service to scale it, they are building the whole application from the ground around services with network boundaries fully embracing scalability. This is where I see the problem with building new applications with Microservices architecture from the start when there is no idea about system load, performance issues or just about anything. I would compare it to `Premature optimization' in programming - why spend a lot of time building super scalable system, when we do not even know yet if we will ever need it?
+
+% how to find correct size of microservice
+What is the correct size of single Microservice? The \textit{micro} part of the word is misleading. The Microservices were created primarily for needs of big companies and original idea behind it was to have a dedicated team of developers behind nearly Microservices. And this is something, which is not possible in most of the companies with just couple of developers. The practice I have seen in reality is, that just couple of developers are running dozens of microservices or even in one project I was single developer managing over 20 microservices (experience described in Chapter \ref{chapter:personal_experience}). The `micro' just means completely different thing for big companies like Netflix or Amazon and for small/medium projects.
+
+Building Microservice architecture requires a lot of planning to properly set boundaries to individual services and keep an eye on it. It is much harder to do bigger refactoring compared to Monolithic architecture even though it should be easier due to the service isolation. Unfortunately in practice due to business requirements it is impossible to create something completed independent. Example: Lets image we have microservice with some HTTP API, which we need to split. Other service are communicating with it through the API. We need to hold the compatibility for API for a long time, since we most likely do not know exactly which services are using which API and if it is safe to remove anything. So, we split the service, the old service will have the full original API, the new service just the part of the API, which it can handle. For the old service additional backward compatibility logic needs to be implemented for those parts of API, which were moved to second service. And this compatibility needs to be maintained for unspecified period of time - this depend if we have any strategy how to safely remove anything and make sure it does not break other parts of system. On other hand in Modulith we would just split the one module into two, and we very easy find all places which uses the old functionality and update it accordingly - how to find it? IDE (basic feature `find usage'), compiler, static code analyses. The compiler makes sure automatically all interfaces and implementations are compatible, and it does for free out of box. Just something, which is not easily possible in Microservices world.
+
+
 \begin{figure}
     \centering
     \includesvg[width=0.7\textwidth]{images/Microservices_basic.svg}
     \caption{A microservice exposing its functionality over a REST API and a topic. \cite{BUILDING_MS_WHAT_ARE}\label{img:microservices_basic}}
 \end{figure}
 
-% TODO how to find correct size of microservice
 
 
 \subsection{Brief history}

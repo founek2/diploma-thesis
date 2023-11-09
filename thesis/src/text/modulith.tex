@@ -1,2 +1,13 @@
 \section{Modulith}
-TODO this will be moved into first Analyse section
+\label{section:modulith}
+`Microservice architectures are all the rage these days, but what's really important for long-term maintainability is modularity. It isn't necessary to use a network boundary to create such modules.' \cite{HOW_TO_BUILD_MODULAR_MONOLITH_CONFERENCE_INTRO}
+
+The word \textit{Modulith} is combination of words `Modular' and `Monolith'. In previous section we discussed Monolith architectures and one of them was \textit{Modular monolith} \ref{section:modular_monolith}, which basically enforces separation of logic into modules. Modulith is taking this modular approach even further by enforcing separation not just on logic, but on database/storage as well (see Diagram \ref{img:modulith_architecture}). This way the modules are truly independent on each other and they are in full control of its data, since now modules has to communicate with others via defined interfaces (this can be done for e.g. directly via inter-process communication, messaging or any other means). Modules being now fully encapsulates gives ability to even run different modules on different nodes/servers and communicate with others over the network. This is an enormous evolution compared to classical Monolith in terms of scaling, since this architecture offers ability to scale just parts of the systems (modules) instead of the whole application. Slow transition to Microservices (discussed in following Section \ref{section:microservices}) is natural step, once the need for scaling arise - just by moving required module into separate service.
+
+Modulith is a better structured Monolith with ability to scale. It still has nature of Monolith, so it is deployed as one unit, which gives confidence of matching interfaces across modules, which is something what Microservices architecture is missing.
+
+\begin{figure}
+    \centering
+    \includesvg{images/modulith_architecture.svg}
+    \caption{Mondulith architecture. Modules encapsulate logic and its own data. \label{img:modulith_architecture}}
+\end{figure}
