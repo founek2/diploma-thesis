@@ -36,6 +36,7 @@ Netlix is a company considered as a pioneer in the field together with Amazon, w
 
 
 \subsection{Performance}
+\label{section:microservices:performance}
 Microservices being distributed system, it necessarily adds higher latency compared to Monolithic systems, but it brings many advantages which can easily balance this negative side. The biggest being the scalability. Microservices are very small unis, which can usually start up in couple of seconds, so it can be scaled based on current workload fully leveraging cloud computing and pricing per usage rather having oversized infrastructure. On other hand scaling does not work out of the box and it requires system to support it. Also, it is not possible to scale up infinitly and some bottleneck will stand out, usually being database.
 
 
@@ -51,6 +52,7 @@ In theory testing should be breeze, but in really not so much, because services 
 Service can often become inaccessible, due to issue on many layers of network or security operated by an orchestrating software. These kinds of problems are hard to simulate in-order to prevent faults from reaching production.
 
 \subsection{Complexity}
+\label{section:microservices:complexity}
 % orchestrator + deployment
 Breaking whole system into isolated `micro' pieces (services) makes it easier for developers to implement new features and work independently, but it definitely makes the whole system more complicated, because of added network communication and more complicated deployment. Network communication is required for inter-service communication and also for outside world, and there is a lot we can choose from. Starting from classical patterns like request-response or more data driven approaches like observer or publish-subscribe.
 % TODO dive more deep into communication 

@@ -57,6 +57,7 @@ I am including this type of Monolith for the completeness, but since it is disco
 % Going more low level - developer point of view, maybe some example?
 
 \subsection{Performance}
+\label{section:monolith:performance}
 Deployment as a single process brings big benefit in terms of performance compared to any type of distributed system, because network comunication is subject to the laws of physics and always add latency. Whereas inter process communication has the lowest latency possible making Monolith in theory the fastest architecture out here. This rule will apply, until the need to scale the application arises and vertical scaling is not an option anymore. Since the whole system is deployed as one unit, horizontal scaling means running multiple instances of the whole monolith, which is in most cases not very efficient, because usually the system does not have uniform load, but some parts of the system does the most of the work, and we still have those other parts taking up resources even though we actually don't even need them.
 
 
@@ -91,9 +92,9 @@ The architecture itself (Single process or distributed monolith) does not enforc
 % TODO: Take into account database coupling of records and how Modulth does it
 The high coupling is one of the reasons why the Modular Monolith was created. It preserves all those positive properties of Single process Monolith, while decreasing coupling by defining boundaries inside monolith. It is than again up to developers to properly define those boundaries and enforce them - this step is very important, because less experienced developers often tend to simplify their work at expense of architecture.
 
-Deployment is very simple compared to any kind of distributed system, since there is just one unit. The downside being size of the unit, not even because of space (we have pretty fast network and cheap disk space), but rather higher resource usage and much slower startup compared to microservices.
+Deployment is very simple compared to any kind of distributed system, since there is just one unit. The downside being size of the unit, not even because of space (we have pretty fast network and cheap disk space), but rather higher resource usage and much slower startup compared to microservice.
 
 % release complexity
-On the other hand, when there are multiple teams working on Monolithic system, planning the release requires close cooperation of all development teams, so everything of what gets into build is production ready. This usually leads to slow deployment cycles, where release is deployed every few months, which does not cope well with today requirements to deploy much more often (e.g. Agile methodology).
+On the other hand, when there are multiple teams working on Monolithic system, planning the release requires close cooperation of all development teams, so everything of what gets into build is production ready. This usually leads to slow deployment cycles, where release is deployed every few months, which does not cope well with today requirements to deploy much more often (e.g. Agile methodology \cite{AGILE_MANIFESTO}).
 
 % Dev tools stack
