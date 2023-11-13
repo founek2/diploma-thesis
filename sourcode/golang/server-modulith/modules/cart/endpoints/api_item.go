@@ -11,6 +11,7 @@ package endpoints
 
 import (
 	"modulith/modules/cart/middleware"
+	"modulith/shared/endpoints"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -24,9 +25,9 @@ func GetItem(w http.ResponseWriter, r *http.Request) {
 	var item, err = db.GetItemByItemId(ctx, params["itemId"])
 
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 	} else {
-		jsonResponse(item, w)
+		endpoints.JsonResponse(item, w)
 	}
 }
 
@@ -35,8 +36,8 @@ func GetItems(w http.ResponseWriter, r *http.Request) {
 
 	var items, err = db.GetItems(r.Context())
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 	} else {
-		jsonResponse(items, w)
+		endpoints.JsonResponse(items, w)
 	}
 }

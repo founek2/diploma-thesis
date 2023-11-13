@@ -11,6 +11,7 @@ package endpoints
 
 import (
 	"modulith/modules/cart/middleware"
+	"modulith/shared/endpoints"
 	"modulith/shared/getters"
 	"net/http"
 
@@ -25,36 +26,36 @@ func AddItemToCart(w http.ResponseWriter, r *http.Request) {
 
 	var item, err = db.GetItemByItemId(ctx, params["itemId"])
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	cart, err := db.GetCartByUserId(ctx, userId)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	_, err = db.AddItemToCart(ctx, item.Id, cart)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	itemsIds, err := db.GetItemsIdsInCart(ctx, cart)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	items, err := db.GetItemsByIds(ctx, itemsIds)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResponse(items, w)
+	endpoints.JsonResponse(items, w)
 }
 
 func RemoveItemFromCart(w http.ResponseWriter, r *http.Request) {
@@ -65,34 +66,34 @@ func RemoveItemFromCart(w http.ResponseWriter, r *http.Request) {
 
 	var item, err = db.GetItemByItemId(ctx, params["itemId"])
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	cart, err := db.GetCartByUserId(ctx, userId)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	_, err = db.RemoveItemFromCart(ctx, item.Id, cart)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	itemsIds, err := db.GetItemsIdsInCart(ctx, cart)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	items, err := db.GetItemsByIds(ctx, itemsIds)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResponse(items, w)
+	endpoints.JsonResponse(items, w)
 }

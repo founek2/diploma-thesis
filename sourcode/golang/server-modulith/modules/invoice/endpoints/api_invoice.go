@@ -14,6 +14,7 @@ import (
 	"modulith/modules/invoice/database"
 	"modulith/modules/invoice/middleware"
 	"modulith/modules/invoice/services"
+	"modulith/shared/endpoints"
 	"modulith/shared/getters"
 	"net/http"
 
@@ -30,9 +31,9 @@ func GetInvoiceById(w http.ResponseWriter, r *http.Request) {
 	var invoice, err = db.GetInvoiceByInvoiceId(ctx, params["invoiceId"])
 
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 	} else {
-		jsonResponse(invoice, w)
+		endpoints.JsonResponse(invoice, w)
 	}
 }
 
@@ -43,14 +44,14 @@ func UpdateInvoiceById(w http.ResponseWriter, r *http.Request) {
 
 	invoice, err := db.GetInvoiceByInvoiceId(ctx, params["invoiceId"])
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	var data database.Invoice
 	err = json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
@@ -58,11 +59,11 @@ func UpdateInvoiceById(w http.ResponseWriter, r *http.Request) {
 
 	invoice, err = db.UpdateInvoice(ctx, invoice)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
-	jsonResponse(invoice, w)
+	endpoints.JsonResponse(invoice, w)
 }
 
 func GetInvoicePdfById(w http.ResponseWriter, r *http.Request) {
@@ -82,7 +83,7 @@ func CreateInvoice(w http.ResponseWriter, r *http.Request) {
 	var data Order
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
@@ -105,14 +106,14 @@ func CreateInvoice(w http.ResponseWriter, r *http.Request) {
 
 	_, err = db.CreateInvoice(ctx, invoice)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 	} else {
 		println("Created invoice", invoice.InvoiceId.String())
-		jsonResponse(invoice, w)
+		endpoints.JsonResponse(invoice, w)
 	}
 }

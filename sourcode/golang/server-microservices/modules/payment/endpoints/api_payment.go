@@ -17,6 +17,8 @@ import (
 	"net/http"
 	"time"
 
+	"microservices/shared/endpoints"
+
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/otel/attribute"
 )
@@ -29,9 +31,9 @@ func GetPaymentById(w http.ResponseWriter, r *http.Request) {
 	var invoice, err = db.GetPaymentByPaymentId(ctx, params["paymentId"])
 
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 	} else {
-		jsonResponse(invoice, w)
+		endpoints.JsonResponse(invoice, w)
 	}
 }
 
@@ -43,7 +45,7 @@ func PayForInvoice(w http.ResponseWriter, r *http.Request) {
 
 	var invoice, err = invoiceApi.GetInvoiceByInvoiceId(ctx, params["invoiceId"])
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
@@ -59,7 +61,7 @@ func PayForInvoice(w http.ResponseWriter, r *http.Request) {
 	invoice.Status = "paid"
 	_, err = invoiceApi.UpdateInvoice(ctx, invoice)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
@@ -70,10 +72,10 @@ func PayForInvoice(w http.ResponseWriter, r *http.Request) {
 
 	_, err = db.CreatePayment(ctx, payment)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResponse(invoice, w)
+	endpoints.JsonResponse(invoice, w)
 }

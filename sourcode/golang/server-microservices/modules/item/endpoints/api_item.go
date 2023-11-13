@@ -12,6 +12,7 @@ package endpoints
 import (
 	"microservices/modules/item/database"
 	"microservices/modules/item/middleware"
+	"microservices/shared/endpoints"
 	"net/http"
 	"strconv"
 	"strings"
@@ -28,9 +29,9 @@ func GetItem(w http.ResponseWriter, r *http.Request) {
 	var item, err = db.GetItemByItemId(ctx, params["itemId"])
 
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 	} else {
-		jsonResponse(item, w)
+		endpoints.JsonResponse(item, w)
 	}
 }
 
@@ -57,8 +58,8 @@ func GetItems(w http.ResponseWriter, r *http.Request) {
 		items, err = db.GetItems(r.Context())
 	}
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 	} else {
-		jsonResponse(items, w)
+		endpoints.JsonResponse(items, w)
 	}
 }

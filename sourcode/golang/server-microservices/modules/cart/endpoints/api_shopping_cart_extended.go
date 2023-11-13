@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"microservices/modules/cart/middleware"
+	"microservices/shared/endpoints"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -14,12 +15,12 @@ func GetShoppingCartForUser(w http.ResponseWriter, r *http.Request) {
 
 	var cart, err = db.GetCartByUserId(ctx, params["userId"])
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResponse(cart, w)
+	endpoints.JsonResponse(cart, w)
 }
 
 func GetItemIdsInShoppingCart(w http.ResponseWriter, r *http.Request) {
@@ -29,18 +30,18 @@ func GetItemIdsInShoppingCart(w http.ResponseWriter, r *http.Request) {
 
 	cart, err := db.GetCartByCartId(ctx, params["cartId"])
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	itemsIds, err := db.GetItemsIdsInCart(ctx, cart)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResponse(itemsIds, w)
+	endpoints.JsonResponse(itemsIds, w)
 }
 
 func DeleteShoppingCartByCartId(w http.ResponseWriter, r *http.Request) {
@@ -50,16 +51,16 @@ func DeleteShoppingCartByCartId(w http.ResponseWriter, r *http.Request) {
 
 	cart, err := db.GetCartByCartId(ctx, params["cartId"])
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	cart, err = db.RemoveCart(ctx, cart)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResponse(cart, w)
+	endpoints.JsonResponse(cart, w)
 }

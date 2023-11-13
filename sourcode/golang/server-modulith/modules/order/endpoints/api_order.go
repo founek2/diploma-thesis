@@ -12,6 +12,7 @@ package endpoints
 import (
 	"modulith/modules/order/database"
 	"modulith/modules/order/middleware"
+	"modulith/shared/endpoints"
 	sharedGetters "modulith/shared/getters"
 	"net/http"
 
@@ -25,19 +26,19 @@ func CancelOrder(w http.ResponseWriter, r *http.Request) {
 
 	var order, err = db.GetOrderByOrderId(ctx, params["orderId"])
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	order.Status = "cancelled"
 	_, err = db.UpdateOrder(ctx, order)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResponse(order, w)
+	endpoints.JsonResponse(order, w)
 }
 
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
@@ -50,19 +51,19 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	cart, err := cartApi.UpsertShoppingCart(ctx, userId)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	itemsIds, err := cartApi.GetItemIdsInShoppingCart(ctx, cart)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	items, err := itemApi.GetItemsByIds(ctx, itemsIds)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
@@ -80,13 +81,13 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	order, err = db.CreateOrder(ctx, order)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	_, err = cartApi.RemoveShoppingCart(ctx, cart)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
@@ -94,7 +95,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	invoice, err := invoiceApi.CreateInvoice(ctx, order.Id, order.Price)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
@@ -104,7 +105,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	order.Status = "processed"
 	_, err = db.UpdateOrder(ctx, order)
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
@@ -117,7 +118,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResponse(orderResponse, w)
+	endpoints.JsonResponse(orderResponse, w)
 }
 
 func GetOrder(w http.ResponseWriter, r *http.Request) {
@@ -127,10 +128,10 @@ func GetOrder(w http.ResponseWriter, r *http.Request) {
 
 	var order, err = db.GetOrderByOrderId(ctx, params["orderId"])
 	if err != nil {
-		failUnexpectedError(err, w, r)
+		endpoints.FailUnexpectedError(err, w, r)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	jsonResponse(order, w)
+	endpoints.JsonResponse(order, w)
 }

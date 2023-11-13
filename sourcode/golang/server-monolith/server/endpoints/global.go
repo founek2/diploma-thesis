@@ -2,11 +2,11 @@ package endpoints
 
 import (
 	"encoding/json"
-	"monolith/server/getters"
 	"net/http"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func jsonResponse(v any, w http.ResponseWriter) {
@@ -22,8 +22,9 @@ func jsonResponse(v any, w http.ResponseWriter) {
 func failUnexpectedError(err error, w http.ResponseWriter, r *http.Request) {
 	println(err.Error())
 
-	main := getters.GetTracerSpan(r.Context())
-	main.SetAttributes(attribute.String("http.error", err.Error()))
-	main.SetStatus(codes.Error, "Unexpected error")
+	span := trace.SpanFromContext(r.Context())
+
+	span.SetAttributes(attribute.String("http.error", err.Error()))
+	span.SetStatus(codes.Error, "Unexpected error")
 	w.WriteHeader(http.StatusInternalServerError)
 }
