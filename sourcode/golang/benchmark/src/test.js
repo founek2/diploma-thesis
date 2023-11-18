@@ -82,3 +82,11 @@ export default function () {
     // cancelOrder(order.orderId)
     payForInvoice(invoice.id)
 }
+
+export function handleSummary(data) {
+    const d = new Date();
+
+    return {
+        [`results/summary.json`]: JSON.stringify(data, null, 2), //the default data object
+    };
+}

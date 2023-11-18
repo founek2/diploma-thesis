@@ -14,9 +14,9 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: monolith
+      POSTGRES_DB: modulith
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d monolith']
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d modulith']
       interval: 1s
       timeout: 1s
       retries: 30
@@ -25,10 +25,10 @@ services:
     ports:
       - '5432:5432'
 
-  server-monolith:
-    build: "../../server-monolith/"
+  server-modulith:
+    build: "../../server-modulith-no-db/"
     environment:
-      DATABASE_URI: postgres://postgres:postgres@postgres:5432/monolith?sslmode=disable
+      DATABASE_URI: postgres://postgres:postgres@postgres:5432/modulith?sslmode=disable
       UPTRACE_DSN: http://project2_secret_token@192.168.10.88:14317/2
       PORT: 8080
       VIRTUAL_HOST: "localhost,nginx"
@@ -40,6 +40,8 @@ services:
         reservations:
           cpus: '0.5'
           memory: 20M
+    cap_add:
+      - NET_ADMIN
 
   nginx:
     image: jwilder/nginx-proxy

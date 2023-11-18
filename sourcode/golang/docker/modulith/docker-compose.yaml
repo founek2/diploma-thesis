@@ -36,10 +36,12 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 50M
+          memory: 100M
         reservations:
           cpus: '0.5'
           memory: 20M
+    cap_add:
+      - NET_ADMIN
 
   nginx:
     image: jwilder/nginx-proxy
