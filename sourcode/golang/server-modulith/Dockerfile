@@ -1,4 +1,8 @@
 FROM golang:1.21 AS build
+
+# Install TrafficControl
+RUN apt update && apt install -y iproute2 && apt clean
+
 WORKDIR /go/src
 
 # Install dependencies

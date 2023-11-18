@@ -5,3 +5,7 @@ use ./server-monolith
 use ./server-modulith
 
 use ./server-microservices
+
+use ./server-microservices-no-db
+
+use ./server-modulith-no-db

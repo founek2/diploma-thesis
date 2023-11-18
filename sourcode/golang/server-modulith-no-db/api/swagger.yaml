@@ -1,0 +1,520 @@
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  description: |-
+    This is a example for performance study based on the OpenAPI 3.0 specification.
+  contact:
+    email: skalicky.martin@iotdomu.cz
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: http://localhost:8080/api/v1
+tags:
+  - name: warehouse
+    description: Everything about items
+  - name: order
+    description: Everything about order
+  - name: invoice
+    description: Generation and download of invoices
+  - name: payment
+    description: Payments communication
+  - name: shopping cart
+    description: Storing and removing items from user's shopping cart
+  - name: extra
+    description: Additional endpoints for inter-modules communication
+paths:
+  /item:
+    get:
+      tags:
+        - warehouse
+      summary: Retrieve all existing items
+      operationId: getItems
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+  /item/{itemId}:
+    get:
+      tags:
+        - warehouse
+      summary: Retrieve an existing item by id
+      operationId: getItem
+      parameters:
+        - name: itemId
+          in: path
+          description: ID of pet to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Item not found
+
+  /cart/items/{itemId}:
+    post:
+      tags:
+        - shopping cart
+      summary: Add item to shopping cart
+      operationId: addItemToCart
+      parameters:
+        - name: itemId
+          in: path
+          description: ID of item to add to shopping cart
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cart'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Item not found
+      security:
+        - api_key: []
+
+    # delete:
+    #   tags:
+    #     - shopping cart
+    #   summary: Remove item from shopping cart
+    #   operationId: removeItemFromCart
+    #   parameters:
+    #     - name: itemId
+    #       in: path
+    #       description: ID of item to delete
+    #       required: true
+    #       schema:
+    #         type: string
+    #         format: uuid
+    #   responses:
+    #     '200':
+    #       description: successful operation
+    #       content:
+    #         application/json:
+    #           schema:
+    #             type: array
+    #             items:
+    #               $ref: '#/components/schemas/Cart'
+    #     '400':
+    #       description: Invalid ID supplied
+    #     '404':
+    #       description: Item not found in cart
+    #   security:
+    #     - api_key: []
+  /order/create:
+    post:
+      tags:
+        - order
+      summary: Create order from shopping cart
+      operationId: createOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Invalid data in body supplied
+      security:
+        - api_key: []
+  /order/{orderId}:
+    get:
+      tags:
+        - order
+      summary: Get order specified by id
+      operationId: getOrder
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of order to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found
+      security:
+        - api_key: []
+  # /order/{orderId}/cancel:
+  #   post:
+  #     tags:
+  #       - order
+  #     summary: Cancel order specified by id
+  #     operationId: cancelOrder
+  #     parameters:
+  #       - name: orderId
+  #         in: path
+  #         description: ID of order to return
+  #         required: true
+  #         schema:
+  #           type: string
+  #           format: uuid
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #       '404':
+  #         description: order not found
+  #       '405':
+  #         description: unable to cancel order
+  #     security:
+  #       - api_key: []
+
+  /payment/{paymentId}:
+    get:
+      tags:
+        - payment
+      summary: Get payment specified by id
+      operationId: payForInvoice
+      parameters:
+        - name: paymentId
+          in: path
+          description: ID of payment
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                creditCardNumber:
+                  type: integer
+                amount:
+                  type: number
+                  format: double
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        '404':
+          description: Order not found
+      security:
+        - api_key: []
+
+  /payment/invoice/{invoiceId}:
+    post:
+      tags:
+        - payment
+      summary: Pay for specific invoice
+      operationId: payForInvoice
+      parameters:
+        - name: invoiceId
+          in: path
+          description: ID of invoice to pay for
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                creditCardNumber:
+                  type: integer
+                amount:
+                  type: number
+                  format: double
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          description: Order not found
+      security:
+        - api_key: []
+
+  /invoice:
+    post:
+      tags:
+        - invoice
+        - extra
+      summary: Generate invoice for order
+      operationId: createInvoice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+      security:
+        - api_key: []
+
+  /invoice/{invoiceId}:
+    get:
+      tags:
+        - invoice
+      summary: Find invoice by ID
+      description: Returns a single pet
+      operationId: getInvoiceById
+      parameters:
+        - name: invoiceId
+          in: path
+          description: ID of invoice to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Invoice not found
+      security:
+        - api_key: []
+    patch:
+      tags:
+        - invoice
+        - extra
+      summary: Update invoice by ID
+      description: Returns a single pet
+      operationId: updateInvoiceById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+      parameters:
+        - name: invoiceId
+          in: path
+          description: ID of invoice to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Invoice not found
+      security:
+        - api_key: []
+  # /invoice/{invoiceId}/pdf:
+  #   get:
+  #     tags:
+  #       - invoice
+  #     summary: Find invoice by ID
+  #     description: Returns a single pet
+  #     operationId: getInvoicePdfById
+  #     parameters:
+  #       - name: invoiceId
+  #         in: path
+  #         description: ID of invoice to return
+  #         required: true
+  #         schema:
+  #           type: string
+  #           format: uuid
+  #     responses:
+  #       '200':
+  #         description: A PDF file
+  #         content:
+  #           application/pdf:
+  #             schema:
+  #               type: string
+  #               format: binary
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '404':
+  #         description: Invoice not found
+  #     security:
+  #       - api_key: []
+
+components:
+  schemas:
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+          example: 7
+        price:
+          type: number
+          format: double
+        createdAt:
+          type: string
+          format: date-time
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        totalQuantity:
+          type: integer
+          format: int32
+          example: 7
+        createdAt:
+          type: string
+          format: date-time
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoiceId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          format: int32
+          example: 7
+        price:
+          type: number
+          format: double
+          example: 333.33
+        shipDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Order Status
+          example: approved
+          enum:
+            - placed
+            - approved
+            - delivered
+        complete:
+          type: boolean
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        price:
+          type: number
+          format: double
+          example: 333.33
+        processedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Payment Status
+          example: approved
+          enum:
+            - approved
+            - confirmed
+            - denied
+        complete:
+          type: boolean
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        price:
+          type: number
+          format: double
+          example: 333.33
+        createdAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Invoice Status
+          example: approved
+          enum:
+            - approved
+            - paid
+            - cancelled
+        complete:
+          type: boolean
+        pdfLink:
+          type: string
+          format: uri
+          example: http://download.io/invoice/123
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: User-Id
+      in: header
