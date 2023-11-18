@@ -7,7 +7,7 @@
 Up to this point, we have walk through three different types of architecture patterns. In this section we are going to look into implementation of simple application using every pattern. We will look into implication concerning internal structure, database design, scalability and of course performance.
 
 \section{Application}
-This is a application example of real world system, consisting of HTTP API, database queries and business logic. It was design to be easy to understand and solve problem known to everyone: orders. Every application exposes folowing HTTP API:
+This is an application example of real world system, consisting of HTTP API, database queries and business logic. It was design to be easy to understand and solve problem known to everyone: orders. Every application exposes following HTTP API:
 \begin{itemize}
     \item \textbf{Get /item} - Retrieve all existing items.
     \item \textbf{Get /item/\{itemId\}} - Retrieve an existing item specified by id.
@@ -32,7 +32,7 @@ As data storage was chosen PostgreSQL, since SQL databases are more generaly kno
     \caption{Diagram describes client flow of application. \label{img:app_activity_flow}}
 \end{figure}
 
-Application will have to be able to run in multiple instances, so it can be later properly benchmarked and scaled. To run application in multiple instances some container orchestrator will have to be used. Instead of adding unnecessary complexity if Kubernetes was used, I decided rather to use \textit{docker compose} to manage containers, since I am not planning to run the application on multiple nodes. All requests will be sent to Nginx will act as reverse proxy as well as load balancer.
+Application will have to be able to run in multiple instances, so it can be later properly benchmarked and scaled. To run application in multiple instances some container orchestrator will have to be used. Instead of adding unnecessary complexity if Kubernetes was used, I decided rather to use \textit{docker compose} to manage containers, since I am not planning to run the application on multiple nodes. All requests will be sent to Nginx, which will act as reverse proxy as well as load balancer.
 
 
 \section{Monolith example}
@@ -46,7 +46,7 @@ This example is implemented as Monolithic system. Basically it is Three-tier app
 
 
 \subsection{Database}
-Due to nature of Monolith as unified system, all data resides inside single database fully leveraging constraints and referential integrity and thus ensuring data consistency. Complete database schema is displayed on Diagram~\ref{img:monolith_db_schema} consisting of 7 tables, five of being entity tables and two entity relation mapping.
+Due to nature of Monolith as unified system, all data resides inside single database fully leveraging constraints and referential integrity and thus ensuring data consistency. Complete database schema is displayed on Diagram~\ref{img:monolith_db_schema} consisting of 7 tables, five of being entity tables and two entity relation mapping. Application will have database pool consisting maximally of 8 connections.
 
 \begin{figure}
     \centering
@@ -87,7 +87,7 @@ Modulith application was further extended to run in 3 modes, depending on enviro
 \end{figure}
 
 \subsection{Database}
-Every module encapsulates its own tables completely independent of the rest. Table are the same as for Monolithic example on Diagram~\ref{img:monolith_db_schema}, but relation across modules were removed. The schema consist of four partitions with relations preserve within partition: first partition consist of invoice table, second of payment table, third order table with rel\_item\_order and last consist of tables item, cart and rel\_item\_cart.
+Every module encapsulates its own tables completely independent of the rest. Table are the same as for Monolithic example on Diagram~\ref{img:monolith_db_schema}, but relation across modules were removed. The schema consist of four partitions with relations preserve within partition: first partition consist of invoice table, second of payment table, third order table with rel\_item\_order and last consist of tables item, cart and rel\_item\_cart. Every module will have separate database pool consisting maximally of 2 connections (8 total).
 
 % \begin{figure}
 %     \centering
@@ -98,7 +98,7 @@ Every module encapsulates its own tables completely independent of the rest. Tab
 \section{Microservices example}
 In this example the Modulith implementation was further split into 5 microservices: Item, Cart, Invoice, Order and Payment. Modulith originally contained 4 packages of which 1 combined logic around Shopping Cart and Items, so it was split into two for the volume to be more consistent across microservices. The dependency graph between services is displayed on Diagram \ref{img:microservices_dependency}.
 
-Spliting Modulith into services requires exposing additional functionality over the network, since it Modulith modules were communicates with other modules via inter-process communication. Following additional endpoints had to be created (compared to Monolith) and corresponding clients to satisfy defined interfaces.
+Spliting Modulith into services requires exposing additional functionality over the network, since Modulith modules were communicates with other modules via inter-process communication. Following additional endpoints had to be created (compared to Monolith) and corresponding clients to satisfy defined interfaces.
 
 % TODO přidat která další API musela vzniknout
 \begin{itemize}
@@ -120,99 +120,7 @@ Whole application is compiled into single binary, but in production it would be 
 \end{figure}
 
 \subsection{Database}
-Every micro-service encapsulates its own data. Table are the same as for Monolithic example on Diagram~\ref{img:monolith_db_schema}, but constraints outside of micro-service scope were removed. The database partitions are the same as for Modulith, just Item table has been separate into its own service after splitting one package into two separate: cart and item.
+Every micro service encapsulates its own data. Database tables are the same as for Monolithic example on Diagram~\ref{img:monolith_db_schema}, but constraints outside micro service scope were removed. The database partitions are the same as for Modulith, just Item table has been separate into its own service after splitting one package into two separate: cart and item. Every microservice will have separate database pool consisting maximally of 2 connections (10 total).
 
+\input{text/benchmark}
 
-
-\section{Benchmark methodology}
-There are two types of scenarios, which will be measured to get inside into bottles of applications from both IO bound and CPU bound point of views. First one represents more even distributed requests, which should result in even application load (cpu intensive tasks vs IO tasks).
-On the other hand the second should result in more cpu sensitive tasks and stress the system more.
-Benchmark communicates with application via HTTP API and has defined following scenario displayed on Diagram \ref{img:benchmark_flow}.
-Client load list of items (100) and adds one into his shopping cart. This repeats 10 times for first scenario and only once for second, after that he creates order, gets invoice information and pays for it.
-
-\begin{figure}
-    \centering
-    \includesvg[width=0.7\textwidth]{images/benchmark_flow.svg}
-    \caption{Benchmark flow diagram. \label{img:benchmark_flow}}
-\end{figure}
-
-All benchmarks results will originate from running 10 parallel tests, totally 100 iterations with following configuration.
-\begin{itemize}
-    \item Golang 1.21.3 - programming language used for applications
-    \item PostgreSQL 14 - database
-    \item Docker 24.0.5 - execution environment
-    \item OpenTelemetry - monitoring from within application
-    \item k6 - load testing tool
-    \item Hardware - Macbook Air 13" with M2, 16 GB Ram, 6 CPU cores assigned to Docker
-          % TODO this configuration might change for MicroServices -> we will see
-    \item Every service instance has following reserved resources: 0.5~CPU and 50~MB of Ram
-\end{itemize}mo
-
-\section{Benchmark results (Alfa)}
-
-In Table \ref{table:benchmark_baseline} are results of benchmark which will act as baseline. Both Monolith and Modulith were running in single instance with 0.5~CPU assigned and Microservices assigned 0.5~CPU per service. Even though both Monolith and Modulith are running as single process, there is already little overhead visible due to more complex internal structure and more database connection pools.
-
-\begin{table}
-    \begin{tabular}{ |p{3cm}||p{3cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
-        \hline
-        \multicolumn{5}{|c|}{Benchmark results scenario 1}                   \\
-        \hline
-        Architecture  & Resources & rps        & avg     & p(90)   & p(95)   \\
-        \hline
-        Monolith      & 0.5\,CPU  & 6.8\,req/s & 1.43\,s & 1.2\,s  & 14.4\,s \\
-        Modulith      & 0.5\,CPU  & 7.8\,req/s & 1.25\,s & 1.59\,s & 9.18\,s \\
-        Microservices & 2.5\,CPU  & 6.9\,req/s & 1.43\,s & 1.1\,s  & 17.9\,s \\
-        \hline
-    \end{tabular}
-    \caption{Table containing benchmark results comparing Monolith, Modulith and Microservices. Microservices and much more CPU reserved, since it consist of 5 services (every singe one has 0.5~CPU assigned).\label{table:benchmark_baseline}}
-\end{table}
-
-The biggest bottleneck of this benchmark is processing order due to CPU bound task. To scale Monolith we would have to run more instances, which for big systems is very resource demanding, and target of this theses is to focus on more modern architecture styles, so it will not be discussed further. On the other hand for modulith systems it is much easier due to its modular structure. The cpu bound task is contained inside invoice package, which can be moved into separate lightweight service and scaled as much as wanted.
-
-In this example, invoice package was moved into separated service implementing HTTP server. HTTP client is than passed in main server to whoever module required the invoice interface. The same benchmark was run for one, two, four and eight instances of invoice service and results can be seen in Table~\ref{table:benchmark_modulith_instances} along with scaled Microservices example. There is no difference between Modulith and Modulith with single invoice service instance, but having the invoice service scaled to two instances, it has more then doubled the speed. Adding more instances scales linearly until the main bottleneck becomes IO bound task during payment. Microservices scale as well as Modulith, but having more overhead (more network inter-service communication) they are slightly slower.
-
-\begin{table}
-    \begin{tabular}{ |p{3cm}||p{3cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
-        \hline
-        \multicolumn{5}{|c|}{Benchmark results scenario 1}                         \\
-        \hline
-        Architecture       & Resources & rps         & avg     & p(90)   & p(95)   \\
-        \hline
-        Modulith unified   & 0.5\,CPU  & 7.8\,req/s  & 1.25\,s & 1.59\,s & 9.1\,s  \\
-        \rowcolor{Gray}
-        Modulith + 1       & 1.0\,CPU  & 7.3\,req/s  & 1.35\,s & 1.0\,s  & 18.6\,s \\
-        \rowcolor{Gray}
-        Microservices      & 2.5\,CPU  & 6.9\,req/s  & 1.43\,s & 1.1\,s  & 17.9\,s \\
-        Modulith + 2       & 1.5\,CPU  & 18.8\,req/s & 510\,ms & 605\,ms & 3.1\,s  \\
-        Microservices  + 1 & 3.0\,CPU  & 21.4\,req/s & 441\,s  & 612\,ms & 3.9\,s  \\
-        \rowcolor{Gray}
-        Modulith + 4       & 2.5\,CPU  & 44.2\,req/s & 204\,ms & 521\,ms & 1.2\,s  \\
-        \rowcolor{Gray}
-        Microservices  + 3 & 4.0\,CPU  & 58.3\,req/s & 165\,ms & 513\,ms & 1.0\,s  \\
-        Modulith + 8       & 4.5\,CPU  & 71.6\,req/s & 133\,ms & 512\,ms & 0.8\,s  \\
-        Microservices  + 7 & 6.0\,CPU  & 66.4\,req/s & 142\,ms & 519\,ms & 0.9\,s  \\
-        \hline
-    \end{tabular}
-    \caption{Table containing benchmark for Modulith and Microservices with module invoice moved into separate service running in multiple number of instances (indicated by number after plus sign, microservices has number by one lower, since by default there is already invoice service running).\label{table:benchmark_modulith_instances}}
-\end{table}
-
-% TODO for microservice benchmark look into CPU usage vs modulith cpu usage
-% there seems to be big spike
-
-
-% \subsection{Performance}
-
-% latency
-% throughput
-% scalability
-% 
-
-% \subsection{Maintainability}
-% Easy debugging | logging
-
-% \subsection{Sustainability}
-% transactions?
-
-% \subsection{Testability}
-
-% \subsection{Complexity}
