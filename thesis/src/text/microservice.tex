@@ -42,12 +42,12 @@ Microservices being distributed system, it necessarily adds higher latency compa
 
 \subsection{Maintainability}
 % Distributed tracing
-Distributed system are much harder to maintain due to added complexity. Even thing like investigating some issue requires collecting logs from multiple servers, aggregating them together and having tool to effectively search through it. Or even better way is to use Distributed tracing, which can generate vast amount of data even on simple systems.
+Distributed system are much harder to maintain due to added complexity. Even thing like investigating some issue requires collecting logs from multiple servers, aggregating them together and having tool to effectively search through it. Or even better way is to use Distributed tracing, which can generate vast amount of data even on simple systems. Modifications in microservices have isolated effect.
 
 \subsection{Sustainability}
 
 \subsection{Testability}
-In theory testing should be breeze, but in really not so much, because services are usually part of a larger business-logic dependent on other services to complete the logic. Practices for service-testing (e.g. mocks, API-contract testing) are known, but they are very complex and costly to implement. In comparisement for monoliths we have many proved testing strategies including end-to-end with many great frameworks/libraries available. \cite{MC_TESTABILITY}
+In theory testing should be breeze, but in really not so much, because services are usually part of a larger business-logic dependent on other services to complete the logic. Practices for service-testing (e.g. mocks, API-contract testing) are known, but they are very complex and costly to implement. For comparison in  monoliths we have many proved testing strategies including end-to-end with many great frameworks/libraries available. \cite{MC_TESTABILITY}
 
 Service can often become inaccessible, due to issue on many layers of network or security operated by an orchestrating software. These kinds of problems are hard to simulate in-order to prevent faults from reaching production.
 
