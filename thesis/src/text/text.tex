@@ -20,15 +20,14 @@
 \chapter{Architectures}
 In this chapter we will look into classical Monolithic architecture, currently what is considered the most famous called Microservices and what can be found somewhere between: Modulith and Service-Oriented architecture. Apart from defining the architectures, we will compare them among the following lines:
 \begin{itemize}
-    \item Performance defining how much workload application can handle, how much latency is present during processing and how well application can scale.
-    \item Maintainability defining how well application is understood, repaired and enhanced.
-    \item Sustainability
-    \item Testability defining the extent of how easy of challenging it is to test an application.
+    \item Performance is defined as how much workload application can handle, how much latency is present during processing and how well application can scale.
+    \item Maintainability is defined as degree to which application is understood, repaired and enhanced from technological perspective.  \cite{SOFTWARE_MAINTAINABILITY}
+    \item Sustainability is defined as how well application performs in long term from business perspective (mainly cost).
+    \item Testability is defined as the extent of how easy or challenging it is to test an application.
 \end{itemize}
 
 \input{text/monolith}
 \input{text/modulith}
-\input{text/service_oriented_architecture}
 \input{text/microservice}
 \input{text/architecture_summary}
 
@@ -43,5 +42,7 @@ In this chapter we will have a closer look on one of the project I've worked, wh
 \input{text/case_study}
 
 %---------------------------------------------------------------
-\chapter{2nd?}
+\chapter{Choosing the right architecture}
+In software engineering there is no silver bullet. Every project has its spec own specifics and requirements. Some solution can work greatly for one project and be catastrophic for others. In following text, we will look closely on architecture decision-making for projects and try to come up with straight forward methodology.
+
 \input{text/methodology}

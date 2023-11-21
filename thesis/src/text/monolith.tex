@@ -50,7 +50,33 @@ Distributed monoliths typically emerge in an environment where not enough focus 
 
 I am including this type of Monolith for the completeness, but since it is discouraged I will not refer to it unless explicitly specified.
 
+% -------------------------------------------------------
+\subsection{Service oriented (SOA)}
+In the world of business, creating solutions to automate the execution of business task makes a great sense. Over the course of IT's history, such solutions have been created with a common approach of identifying business task to be automated, defining business requirements and then creating the solution logic \cite{SERVICE_ORIENTED_ARCHITECTURE}. This has been accepted and proven approach to achieving positive business benefits, but it had a few negative sides:
+\begin{itemize}
+    \item  Repeatedly building "disposable applications" is not the perfect approach.
+    \item  Creation of new solution logic in given enterprise commonly results in a significant amount of redundant functionality \cite{SERVICE_ORIENTED_ARCHITECTURE}.
+    \item Applications built only with the automation of specific business task in mind, are generally not designed to integrate later with other applications well, resulting in a complex integration architecture.
+\end{itemize}
+All of those negative aspects listed above led to creation of Service-Oriented architecture with the idea of creating reusable services, requiring high-level of interoperability between service and numerous potential service consumers, with standardized contract, loosely coupled and composable, which requires to be standardized with cross-service data exchange.
 
+\begin{quote}
+    `SOA, or service-oriented architecture, defines a way to make software components reusable and interoperable via service interfaces. Services use common interface standards and an architectural pattern so they can be rapidly incorporated into new applications. This removes tasks from the application developer who previously redeveloped or duplicated existing functionality or had to know how to connect or provide interoperability with existing functions.' \cite{IBM_SOA}
+\end{quote}
+
+At the start, companies were launching big organization wide initiatives, to convert everything into Service oriented architecture, which promised a lot of benefits. It was laborious and time-consuming, and often the company's development team had to re-architecture all existing systems as well as design new applications according to new principles. A different way to approach problems of SOA was Enterpise service bus (ESB), which can be implemented and deployed in a short period acting as a central solution for integrations. This approach with ESB has been quickly adopted and basically everyone in business who have SOA architecture is using it. It allows preserving existing legacy Modulith systems, just by exposing from them service via API and creating integration through ESB.
+
+Every enterprise contains service inventory, where all services are located and from which the targeted application can be composed as shown on Diagram \ref{img:soa_architecture}. The direct composable property should have mitigated traditional perception of integration, but in reality it just moved into ESB. Once a signification part of the enterprise solution logic is represented by services in inventory, which gives freedom to mix these services into infinite composition configurations to match whatever automation task come our way \cite{SERVICE_ORIENTED_ARCHITECTURE}.
+
+A classification is used to indicate the reuse potential of the logic and how the service relates to the actual business logic. The common service models are: Task service, Entity service, Utility service and microservice (this is different microservice than we know today, in SOA it was used for small implementation specific service, which was not reusable). \cite{SERVICE_ORIENTED_ARCHITECTURE}
+
+The complexity of implementation to achieve actual reusability is huge and has noticeable performance drawbacks, not to mention high cost in maintainability. In practice this architecture has been mostly implemented into big existing companies, which had already some existing legacy systems and in combination with ESB giant high coupled Monoliths were created. Today everyone is moving away from this architecture if they did not already towards microservices (section~\ref{section:microservices}), which has proven to be better suited for the task.
+
+\begin{figure}
+    \centering
+    \includesvg[width=0.7\textwidth]{images/soa_architecture.svg}
+    \caption{Services are delivered into service inventory (right) from which service composition are drawn (bottom). \label{img:soa_architecture}}
+\end{figure}
 
 % -------------------------------------------------------
 
@@ -67,17 +93,13 @@ Deployment as a single process brings big benefit in terms of performance compar
 % 
 
 \subsection{Maintainability}
-\begin{quote}
-    Software maintainability is defined as the degree to which an application is understood, repaired, or enhanced. \cite{SOFTWARE_MAINTAINABILITY}
-\end{quote}
-Maintenance is tightly related to Complexity. Usually the more complex application, the more hard to maintain and with monolithic high coupling it is not very good at it. Although there are some positive sides, having debugging and logging much more easier than with any distributed system, where it is multiple times harder and requiring collection of tools just to collect some information.
-
+Maintenance is tightly related to Complexity. Usually the more complex application, the more hard to maintain and with monolithic high coupling it is very bad at it. A single modification can have power to affect the entire application and maintaining legacy Monoliths has become nightmare for many developers, since even smallest change requires vast knowledge of the whole system. Although there are some positive sides, having debugging and logging much easier than with any kind of distributed system, so finding the issue is usually the simple step compared to creating the actual fix.
 
 % Easy debugging | logging
 
 \subsection{Sustainability}
 % Not sure what should be here
-Every system today needs some kind of database either relational like SQL or noSQL and ensuring data consistency (to some extent). This is mainly achieved by transactions. Using it in Monolithic systems is very easy, and every language has support for it, while running distributed transactions requires special patterns like Saga \cite{SAGA_PATTERN}.
+The maintenance cost of Monolith is huge. Either the operational costs due to its inability to scale properly, so we have to have oversized infrastructure, but also having developers with vast knowledge of the system and well-defined testing process. Introducing any kind of architecture change is nearly impossible and integrations have proven to be complicated/problematic as well.
 
 \subsection{Testability}
 Since in classical monolith, there are no boundaries, it is nearly impossible to test just specific parts of the system in isolation, because the whole system needs to be present in order for it to function. So, writing end-to-end tests is usually the answer, but it has much harder to write and even run them, because they take much more time, compared to testing just isolated parts.

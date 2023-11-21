@@ -5,24 +5,24 @@ Following table~\ref{table:architecture_compare} contains summary of previous se
 \begin{sidewaysfigure}
     \begin{tabular}{ |p{2.7cm}|p{3cm}|p{3cm}|p{4cm}|p{3cm}| }
         \hline
-        \textbf{Aspect}       & \textbf{Monolithic}                            & \textbf{Modulith}                                    & \textbf{Hybrid Modulith}                                                                    & \textbf{Microservices}                                \\
+        \textbf{Aspect}       & \textbf{Monolithic}                            & \textbf{Modulith}                                    & \textbf{Hybrid Modulith}                                   & \textbf{Microservices}                                \\
         \hline
-        Structure             & Single, highly coupled   application.          & Single, loosly coupled application                   & Single loosely coupled application with few independent microservices.                      & Many small, independent services.                     \\
+        Structure             & Single, highly coupled   application.          & Single, loosely coupled application                  & Multiple loosely coupled Moduliths.                        & Many small, independent services.                     \\
         \hline
-        Communication         & Direct function calls.                         & Direct function calls.                               & Direct function calls and network communication                                             & Network communication through APIs or messages.       \\
+        Communication         & Direct function calls.                         & Direct function API calls.                           & Network communication.                                     & Lof of network communication.                         \\
         \hline
-        Scalability           & Add instance of whole application.             & Add instance of whole application.                   & Add instance of microservice of move module to microservice.                                & Add instance of individual microservices.             \\
+        Scalability           & Add instance of whole application.             & Add instance of whole application.                   & Add instance of individual Modulith.                       & Add instance of individual microservice.              \\
         \hline
-        Architecture overhead & Minimal                                        & Minimal                                              & Moderate                                                                                    & Higher                                                \\
+        Architecture overhead & Minimal                                        & Minimal                                              & Moderate                                                   & Higher                                                \\
         \hline
-        Maintainability       & Modification can affect the entire application & Modification in modules has isolated effects.        & Modifications in modules and microservices have isolated effect.                            & Modifications in microservices have isolated effect.  \\
+        Maintainability       & Modification can affect the entire application & Modification in modules has isolated effects. *      & Modifications in module have isolated effect. *            & Modifications in microservice have isolated effect. * \\
         \hline
-        Deployment            & Single unit.                                   & Single unit or independent deployment of modules.    & Single unit or independent deployment of modules + independent deployment of microservices. & Independent deployment of microservices.              \\
+        Deployment            & Single unit.                                   & Single unit or independent deployment of modules.    & Independent deployment of Moduliths or individual modules. & Independent deployment of microservices.              \\
         \hline
-        Collaboration         & Everyone works on one codebase.                & Everyone works on one codebase.                      & Most people works on one codebase + teams collaborate on individual microservices.          & Teams collaborate on individual microservices.        \\
+        Collaboration         & Everyone works on one codebase.                & Everyone works on one codebase.                      & Teams collaborate on individual Moduliths.                 & Teams collaborate on individual microservices.        \\
         \hline
-        Complexity            & Higher due to highly coupled  components       & Moderate to lower complexity with decoupled modules. & Moderate to lower complexity with decoupled modules.                                        & Lower complexity with highly decoupled microservices. \\
+        Complexity            & Higher due to highly coupled  components       & Moderate to lower complexity with decoupled modules. & Moderate to lower complexity with decoupled modules.       & Lower complexity with highly decoupled microservices. \\
         \hline
     \end{tabular}
-    \caption{Overview of architectures.\label{table:architecture_compare}}
+    \caption{Overview of architectures. *Modifications to API always affects the whole application.\label{table:architecture_compare}}
 \end{sidewaysfigure}
