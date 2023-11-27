@@ -24,3 +24,149 @@ In order to present some concrete data let's look into a couple of real-world ex
 \begin{note*}
     Netflix is one of the most mentioned company for its Microservices architecture. What is not that well know, is that the actual migration from Monolithic system, when they started to having trouble with performance and scaling was in 2009. By that time they had Monolith for 10 years and in that time already over 11~millions \cite{NETFLIX_2009_EARNINGS} of paying subscribers. No one knows what would happen if they started the original architecture with something else, maybe it would work, but definitely the Monolith worked well until it just didn't suit their need anymore.
 \end{note*}
+
+\section{Decision making}
+Every software project composes of at least 6 stages: planning, designing, development, test, deployment, and maintenance. We will be primarily discussing the first two: planning and designing, because that is where the high level decision around architecture is made. Ideally, a software architect creates the concepts and designs for software and helps turn those concepts into plans, just like an architect who designs buildings. In smaller projects, the role of software architect will usually fall on the most experience developer. While building architects are not typically concerned with how their ideas are implemented, a software architect is engaged throughout all stages of the development process, not just around architecture, but all high-level decisions regarding tools, coding standards or platforms to be used.
+
+The architecture of the system is probably the most important decision to be made, since it influences all following stages of development and usually presents quite the challenge to change afterwards. Interestingly, choosing the architecture is not just about meeting all the projects requirements, but it also must fit into the style of the organization. There is an IT theory created by computer scientist/programmer Melvin Conway in 1967, which states: ``Organizations, who design systems, are constrained to produce designs which are copies of the communication structures of these organizations.''\cite{paper:conway:1968}. And this theory makes a lot of sense. When we are making any hard decision, we are always more incline to something we know well, rather than something what could be better, but we have zero experience with. Also, not all the designs might be compatible with our organization structure. For example Monolith with 4 month release cycle won't for early stage startup, where they are adding new feature every week into their product and working in short iteration cycles. The same applies other way around. Having Microservice architecture, fast iteration cycles and ability to deploy whenever some feature is ready is great, but when applied in a corporation with complex hierarchical structure, where getting approved simple changes takes weeks does not even remotely utilize the benefits the architecture has to offer.
+
+The importance of choosing correct architecture for many software projects is being underestimated and influenced by new shining trends and fancy words in IT industry instead of being primarily driven by requirements, and it can lead to unstable, inefficient and overpriced projects.
+
+\subsection{Choosing right criteria}
+To be sure that the chosen software architecture will meet the needs of the software that will be developed, it is very important that the architect fully grasps and understands the business needs that will be served. All of those should be as equality understood as the technical and functional expectations of the application. The general aspects to consider:
+\begin{itemize}
+    \item Security and performance requirements
+    \item Client and vendor expectations
+    \item The type of hosting
+    \item Technologies
+\end{itemize}
+
+To build good requirements, as much questions as possible have to be answered. It is imperative that all requirements are defined in most specific and concrete way. Having vague and unattainable requirements is nearly as good as have none. It's not enough to say performance, portability or scalability. No project can have absolutely perfect performance. It must be properly specified and also limited in order to meet other requirements as well\cite{REQUIREMENTS_LIMITED}.
+% TODO přidat diagram x dimenzí a že nelze každou mít na 100, ale je třeba kompromisů - fancy diagram nevím jak se jim žíká
+
+Requirements are generally divided into two categories:
+\begin{itemize}
+    \item \textbf{Functional requirements} describe what a system has to do. If the system does not meet functional requirement it will fail. This is because it is not being able to do something it must do to operate properly. Another way to view functional requirements is in terms of inputs and outpus.They specify what the system must to do in response to different inputs and what it must output.
+    \item \textbf{Non-functional requirements} describe how the system works. They focus on how the system delivers the specified functionality. At a first glance, they may seem as less important than functional requirements, but both are significant. Non-functional requirements do not have influence on functionality of the system, but they have impact on how well it will be performed.
+\end{itemize}
+
+Another thing which might influence the decision is team experience. If we have team of developers with great deal of experience in creating Monoliths and zero experience with distributed system, choosing Microservice architecture as a starting point can prove to be decision, which we might regret. Microservices require completely different mindset than to which the team were used to while building Monoliths. And we might easily end up with something which should be avoided at all cost: \textit{distributed Monolith}.
+
+\subsection{Modulith lifecycle}
+Architecture ability to adapt in the long run to different requirements is an important quality. Modulith stands right between Monolith and Microservices, which gives it ability to easily convert forth and back between different architecture styles. The following text describes few examples on how the Modulith can utilize.
+
+% Monolith -> Modulith, mnohem snažší a iterativní oproti Monolith -> Microservice
+\subsubsection{Monolith to Modulith}
+\label{subsection:monolith_to_modulith}
+Lot of the software companies, who has been around for few years and did not jump fully into Microservice hype right away do have some legacy Monolithic systems, whose maintenance is costly, but they cannot be converted into Microservices, since it would require rewriting the whole system from the ground up and no one from business wants to make this kind of big investment which would basically not bring any new feature.
+
+Instead of this radical approach of rewriting the whole system, which will basically cost the company twice the money, since rewriting system means creating new project with all steps of development: analyses, design, etc. and long period of bug fixing. I would rather suggest iterative approach of converting existing Monolith into Modulith, by concentrating on solving specific issue at hand, rather than trying to solve everything at once by rewriting the application. The method is displayed on Figure~\ref{fig:monolith_to_modulith_steps} and consists of following steps:
+
+\begin{enumerate}
+    \item \textbf{Modularization} step impose restructuring code and modularizing the whole application, yet without worrying about issues associated with Distributed system (network reliability, latency, complexity). Proper focus can be invested into determining modules, their responsibilities and boundaries. Depending on the project the scope of modules can vary from complex modules to single responsibility per module.
+    \item \textbf{Scale unit} step is about getting the application ready for scaling by running multiple instances. Monolithic systems are Usually stateful or require some kind of synchronization for part of its functionality. In this step all of those either potential or actual blockers of running multiple instances needs to be solved or replaced by solutions which can scale. Now the application can achieve high availability and increase performance by scaling the whole instance. Now the architecture reached the definition of Modulith.
+    \item \textbf{Scale modules} step takes ability to scale even further by allowing to scale individual modules or group of modules instead of the whole application as a unit. This should be implemented with scare, since it might not even be needed as long as scalability reached by previous step is sufficient, and also it introduces significant negative effects:
+          \begin{itemize}
+              \item Becomes distributed system - network instability, higher latency, complexity, complicated debugging and logging.
+              \item More complicated deployment - some sort of versioning is required to ensure compatibility between individual modules.
+              \item More code or tooling - instead of just having interfaces and its implementation to separate modules, now it has to be also implemented to support network calls, so some client/server code has to be implemented or ideally generate by additional tools.
+          \end{itemize}
+          By completing the Scale modules step, the architecture reaches state defined as \textit{Hybrid Modulith} in this theses.
+\end{enumerate}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includesvg[width=0.5\textwidth]{images/monolith_to_modulith_0.svg}
+        \caption{Original Monolith}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includesvg[width=0.7\textwidth]{images/monolith_to_modulith_1.svg}
+        \caption{Modularization step}
+    \end{subfigure}
+    % \vspace{0.5cm}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includesvg[width=0.4\textwidth]{images/monolith_to_modulith_2.svg}
+        \caption{Scale unit step (reached Modulith)}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includesvg[width=0.7\textwidth]{images/monolith_to_modulith_3.svg}
+        \caption{Scale modules step (reached Hybrid Modulith)}
+    \end{subfigure}
+    \caption{Conversion steps from Monolith to Hybrid Modulith}
+    \label{fig:monolith_to_modulith_steps}
+\end{figure}
+
+% Modulith scaling, přidávání instancí a rozdělení Modulithu (lze dělit na různě velké celky)
+
+% Modulith -> Microservice, multiple teams, want to add network boundaries and more granular responsibility distribution
+\subsubsection{Modulith to Microservice}
+Over the time the Modulith architecture might stop suiting the needs of the project. Examples reasons: more gine-grained granularity of the application is required, teams need to have more independents, missing technology-agnosticism or more distributed solution is wanted to achieve higher availability or scalability.
+
+After properly weighting all pros and cons, decision can be made to migrate Modulith to Microservice architecture. The transformation should come ideally as natural steps over time with changing requirements and system needs. Modulith is composed of individually scalable modules with defined boundaries. Moving to Microservice architecture is about refining those modules and transforming into microservices via defining fine-grained boundaries. In cases where modules were defined with small scopes, the transformation can be simply 1 module to 1 microservices, but usually modules will be split into multiple microservices, since they have larger scope compared to Microservices which are usually driven by single business responsibility principle. The example transformation step is shown at figure~\ref{fig:modulith_to_microservices_steps}.
+
+\begin{figure}
+    \centering
+    \includesvg[width=\textwidth]{images/modulith_to_microservices_steps.svg}
+    \caption{Conversion step from Modulith to Microservices.\label{fig:modulith_to_microservices_steps}}
+\end{figure}
+
+
+% Microservice -> Modulith, sloučení služeb sníží overhead, zjednodušší vývoj, vhodně pro menší týmy
+\subsubsection{Microservice to Modulith}
+% pozn. různé technologie/jazyky
+Microservice architecture can become too complex to manage or just too expensive to operate. The solution might be in converting Microservices into Modulith, which will simplify deployment resulting in cheaper infrastructure and boost up developer productivity by removing complexity of distributed system.
+
+The migration is done simply by converting microservices into modules as shown at Figure~\ref{fig:microservices_to_modulith_steps}, since they are already fully encapsulated and have defined API. The network communication can be completely replaced by inter-process communication or if for some modules scalability is required for performance, it can be converted into \textit{Hybrid Modulith} as specified in \textit{Scale modules} step of section~\ref{subsection:monolith_to_modulith}. Later on some modules might merge together to take on bigger responsibility, but this depends on how the module boundaries are set within project.
+
+\begin{figure}
+    \centering
+    \includesvg[width=\textwidth]{images/microservices_to_modulith_steps.svg}
+    \caption{Conversion step from Microservices to Modulith.\label{fig:microservices_to_modulith_steps}}
+\end{figure}
+
+
+\subsection{Building a new application}
+When building an application from ground up, I believe the Modulith is currently the best/safest choice. Because why everyone is choosing Microservices from the start? Because of performance? On start of project we have some presumptions about performance requirements, but they are still just `presumptions' and actual performance issue in most cases are inflicted by limitations of the actual implementation. Also, the performance requirements might dramatically change once the business moves in some other direction than expected at the start and this is something which happens a lot in startups.
+
+So it might be the independence of microservice? The Modulith offers the same quality with modules. Just the Microservice are more dramatically enforcing smaller scope, which can be leveraged for modules in the same manner. How about testability? Again, modules can be tested in same independent manner as Microservice plus even further using techniques known from Monoliths like end-to-end testing without all the shenanigans connected with Microservices and orchestrations. Maintainability? Modulith has much simpler deployment strategy, less complex environment and are cheaper to host. Sustainability? The amount of work required to just merge two Microservices into single one is quite high, due to inability to effectively even find all of its defendants and update them all accordingly. On other hand since Modulith is just single codebase, the relations are there and visible just by using standard and proven tools e.g. IDE with `find usage' feature. Also, any deep refactoring can be done in Modulith in much easier manner than in Microservice. The biggest negative aspects for small/medium projects lies in ability of developers to properly defined scope and boundary of modules and more importantly preserving it over the time, since the individual microservices have network boundary which is hard to cross, but with Modulith it is much easier, since it is one repository with inter-process communication, but this can be largely avoided by setting up automated tools, which will enforce the boundaries on code level directly by monitoring cross-module dependencies. The recommended lifecycle of the project can look like this:
+
+% vývojáři musí správně nastavit scope a boundaries, složitější uhlídat, musí se správně nastavit ?procesy?
+
+\begin{enumerate}
+    \item Properly defined scope and boundaries of individual modules
+    \item Build the Modulith and scale as unit until it is efficient.
+    \item Identify modules having performance issues and move them into independent service (another Modulith).
+    \item Scale the independent Moduliths as required.
+    \item In case of need for additional granularity migrate to Microservices architecture.
+\end{enumerate}
+
+
+% TODO: At the start of planning phase, all criteria which will drive the decision should be specified, so they can be later used to transparently compare different solutions and choose the best of them. 
+
+% Overlooked importance of choosing right architecture, leads to instability, insifficency and hight costs
+% to undestood, architect must fully grasps business needs 
+% - describe architect and his role in software design 
+% - quote M. Conway, a computer scientist, once said: “Organizations which design systems ... are constrained to produce designs which are copies of the communication structures of these organizations.” This is a clear guideline for architects to take into account the company structure when designing new solutions. 
+
+% záleží i na týmu - každý má jiné zkušenosti a znalosti -> bude trvat než se adaptují
+% Choosing criteria - list
+% functional and non-functional requirements
+
+% be awera of over-engineering
+% Prototype, iterations - fail fast
+
+% Sources https://www.bocasay.com/web-application-software-architecture/
+% https://dl.acm.org/doi/epdf/10.1145/1978802.1978812 (první article na decision making)
+% - Hence architects should choose a decision-making technique based on the difficulties that they wish to avoid. (začátek)
+% - Software architecture determines not only how the system should be constructed, but also guides its evolution
+% https://www.lucidchart.com/blog/how-to-design-software-architecture
+% - It’s not enough to say you want performance, portability, or scalability, though. Non-functional requirements must also be quantified. No project can have absolutely perfect performance: “performance” must be specified and limited in order to meet other requirements. 
+
+
+% Přidat několik praktických příkladů s úvodem, různými architekturami a možnými následky
