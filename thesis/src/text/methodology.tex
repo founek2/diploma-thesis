@@ -52,11 +52,11 @@ Requirements are generally divided into two categories:
 
 Another thing which might influence the decision is team experience. If we have team of developers with great deal of experience in creating Monoliths and zero experience with distributed system, choosing Microservice architecture as a starting point can prove to be decision, which we might regret. Microservices require completely different mindset than to which the team were used to while building Monoliths. And we might easily end up with something which should be avoided at all cost: \textit{distributed Monolith}.
 
-\subsection{Modulith lifecycle}
+\section{Modulith lifecycle}
 Architecture ability to adapt in the long run to different requirements is an important quality. Modulith stands right between Monolith and Microservices, which gives it ability to easily convert forth and back between different architecture styles. The following text describes few examples on how the Modulith can utilize.
 
 % Monolith -> Modulith, mnohem snažší a iterativní oproti Monolith -> Microservice
-\subsubsection{Monolith to Modulith}
+\subsection{Monolith to Modulith}
 \label{subsection:monolith_to_modulith}
 Lot of the software companies, who has been around for few years and did not jump fully into Microservice hype right away do have some legacy Monolithic systems, whose maintenance is costly, but they cannot be converted into Microservices, since it would require rewriting the whole system from the ground up and no one from business wants to make this kind of big investment which would basically not bring any new feature.
 
@@ -105,7 +105,7 @@ Instead of this radical approach of rewriting the whole system, which will basic
 % Modulith scaling, přidávání instancí a rozdělení Modulithu (lze dělit na různě velké celky)
 
 % Modulith -> Microservice, multiple teams, want to add network boundaries and more granular responsibility distribution
-\subsubsection{Modulith to Microservice}
+\subsection{Modulith to Microservice}
 Over the time the Modulith architecture might stop suiting the needs of the project. Examples reasons: more gine-grained granularity of the application is required, teams need to have more independents, missing technology-agnosticism or more distributed solution is wanted to achieve higher availability or scalability.
 
 After properly weighting all pros and cons, decision can be made to migrate Modulith to Microservice architecture. The transformation should come ideally as natural steps over time with changing requirements and system needs. Modulith is composed of individually scalable modules with defined boundaries. Moving to Microservice architecture is about refining those modules and transforming into microservices via defining fine-grained boundaries. In cases where modules were defined with small scopes, the transformation can be simply 1 module to 1 microservices, but usually modules will be split into multiple microservices, since they have larger scope compared to Microservices which are usually driven by single business responsibility principle. The example transformation step is shown at figure~\ref{fig:modulith_to_microservices_steps}.
@@ -118,7 +118,7 @@ After properly weighting all pros and cons, decision can be made to migrate Modu
 
 
 % Microservice -> Modulith, sloučení služeb sníží overhead, zjednodušší vývoj, vhodně pro menší týmy
-\subsubsection{Microservice to Modulith}
+\subsection{Microservice to Modulith}
 % pozn. různé technologie/jazyky
 Microservice architecture can become too complex to manage or just too expensive to operate. The solution might be in converting Microservices into Modulith, which will simplify deployment resulting in cheaper infrastructure and boost up developer productivity by removing complexity of distributed system.
 
@@ -131,7 +131,7 @@ The migration is done simply by converting microservices into modules as shown a
 \end{figure}
 
 
-\subsection{Building a new application}
+\section{Building a new application}
 When building an application from ground up, I believe the Modulith is currently the best/safest choice. Because why everyone is choosing Microservices from the start? Because of performance? On start of project we have some presumptions about performance requirements, but they are still just `presumptions' and actual performance issue in most cases are inflicted by limitations of the actual implementation. Also, the performance requirements might dramatically change once the business moves in some other direction than expected at the start and this is something which happens a lot in startups.
 
 So it might be the independence of microservice? The Modulith offers the same quality with modules. Just the Microservice are more dramatically enforcing smaller scope, which can be leveraged for modules in the same manner. How about testability? Again, modules can be tested in same independent manner as Microservice plus even further using techniques known from Monoliths like end-to-end testing without all the shenanigans connected with Microservices and orchestrations. Maintainability? Modulith has much simpler deployment strategy, less complex environment and are cheaper to host. Sustainability? The amount of work required to just merge two Microservices into single one is quite high, due to inability to effectively even find all of its defendants and update them all accordingly. On other hand since Modulith is just single codebase, the relations are there and visible just by using standard and proven tools e.g. IDE with `find usage' feature. Also, any deep refactoring can be done in Modulith in much easier manner than in Microservice. The biggest negative aspects for small/medium projects lies in ability of developers to properly defined scope and boundary of modules and more importantly preserving it over the time, since the individual microservices have network boundary which is hard to cross, but with Modulith it is much easier, since it is one repository with inter-process communication, but this can be largely avoided by setting up automated tools, which will enforce the boundaries on code level directly by monitoring cross-module dependencies. The recommended lifecycle of the project can look like this:
