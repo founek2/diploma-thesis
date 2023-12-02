@@ -13,4 +13,5 @@
 *.fdb_latexmk
 *.gz
 *.pdf
+!assignment-include.pdf
 .DS_Store

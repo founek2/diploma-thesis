@@ -4,7 +4,7 @@
 % Performance testing +monolith
 % https://ieeexplore.ieee.org/abstract/document/9109514
 
-Up to this point, we have walk through three different types of architecture patterns. In this section we are going to look into implementation of simple application using every pattern. We will look into implication concerning internal structure, database design, scalability and of course performance.
+Up to this point, we have walk through three different types of architecture patterns. In this section we are going to look into implementation of a simple application using all 3 discussed architecture patterns (Monolith, Mudulith, Microservice). We will look into implication concerning internal structure, database design, scalability and of course performance.
 
 \section{Application}
 This is an application example of real world system, consisting of HTTP API, database queries and business logic. It was design to be easy to understand and solve problem known to everyone: orders. Every application exposes following HTTP API:
@@ -21,7 +21,7 @@ This is an application example of real world system, consisting of HTTP API, dat
     \item \textbf{Post /payment/invoice/\{invoiceId\}} - Pay for invoice specified by id.
 \end{itemize}
 
-Client of application can view items, add them to his shopping cart, place order, retrieve invoice and pay for it. As most of the applications today, there are mainly operations querying data or saving data into database. Activity flow is described on Diagram \ref{img:app_activity_flow}. First session is created for client, then he loads items and add all he wants into his shopping cart. Later client places order, invoice is generated in background and client can cancel the order or pay for it. To add more cpu sensitive task, the generation of invoice generates pdf and also calculates 41st Fibonacci Number.
+Client of application can view items, add them to his shopping cart, place order, retrieve invoice and pay for it. As most of the applications today, there are mainly operations querying data or saving data into database. Activity flow is described on Figure~\ref{img:app_activity_flow}. First session is created for client, then he loads items and add all he wants into his shopping cart. Later client places order, invoice is generated in background and client can cancel the order or pay for it. To add more cpu sensitive task, the generation of invoice generates pdf and also calculates 41st Fibonacci Number.
 
 The candidates for implementation programming language were Rust and Golang due to its minimal runtime (minimal effect on Benchmarking). Winner being Golang, because of it's easier to use, good authors personal experience and better support for Open Tracing project, which will be used for monitoring from within application during benchmarking. All applications are based on \textit{gorilla/mux} \cite{MUX} library for http server + request routing and \textit{Bun} \cite{BUN} as lightweight ORM.
 
@@ -36,7 +36,7 @@ Application will have to be able to run in multiple instances, so it can be late
 
 
 \section{Monolith example}
-This example is implemented as Monolithic system. Basically it is Three-tier application: presentation (HTTP API), application and data (database). Diagram \ref{img:monolith_db_schema} describes internal application package structure. \textit{Routes} package contains path mapping for endpoints handlers defined in \textit{endpoints}. Handlers contain simple logic definition, more complex logic resides in \textit{services} and data manipulation around database is contained in \textit{database} package.
+This example is implemented as Monolithic system. Basically it is a three-tier application: presentation (HTTP API), application and data (database). Figure~\ref{img:monolith_db_schema} describes internal application package structure. \textit{Routes} package contains path mapping for endpoints handlers defined in \textit{endpoints}. Handlers contain simple logic definition, more complex logic resides in \textit{services} and data manipulation around database is contained in \textit{database} package.
 
 \begin{figure}
     \centering
@@ -46,7 +46,7 @@ This example is implemented as Monolithic system. Basically it is Three-tier app
 
 
 \subsection{Database}
-Due to nature of Monolith as unified system, all data resides inside single database fully leveraging constraints and referential integrity and thus ensuring data consistency. Complete database schema is displayed on Diagram~\ref{img:monolith_db_schema} consisting of 7 tables, five of being entity tables and two entity relation mapping. Application will have database pool consisting maximally of 8 connections.
+Due to nature of Monolith as unified system, all data resides inside single database fully leveraging constraints and referential integrity and thus ensuring data consistency. Complete database schema is displayed on Diagram~\ref{img:monolith_db_schema} consisting of 7 tables, five of being entity tables and two entity relationship mapping. Application will have database pool consisting maximally of 8 connections.
 
 \begin{figure}
     \centering
@@ -57,7 +57,7 @@ Due to nature of Monolith as unified system, all data resides inside single data
 
 
 \section{Modulith example}
-This is example using Modular Monolith approach. The original Monolithic application was split into multiple smaller Monoliths called \textit{modules}. The scope of every module depends on the specificity of the project. In this case it nearly corresponds to module per database Entity, exception being shopping cart and items, which were merged into single module to demonstrate possibility to have modules with larger volume. Package schema and dependency are displayed on Diagram~\ref{img:modulith_package}.
+This is an example using Modular Monolith approach. The original Monolithic application was split into multiple smaller Monoliths called \textit{modules}. The scope of every module depends on the specificity of the project. In this case it nearly corresponds to module per database Entity, exception being shopping cart and items, which were merged into single module to demonstrate possibility to have modules with larger volume. Package schema and dependency are displayed on Diagram~\ref{img:modulith_package}.
 
 Every module has the same internal structure as original Monolith plus exposes its API with interface (Diagram~\ref{img:modulith_module_package}). Modules encapsulate its own data storage and there shouldn't be any inter-modules table constraint set in database, although it is possible, it does not make sense from the perspective of logical separation. It should be possible for every module to use different database and even different database technology. In case of the largest module containing shopping cart and items, there are foreign keys constraints preserved since it resides inside single module.
 
@@ -77,7 +77,7 @@ Modulith application was further extended to run in 3 modes, depending on enviro
 \begin{figure}
     \centering
     \includesvg[width=0.7\textwidth]{images/modulith_module_package.svg}
-    \caption{Internal package structure of single module (Modulith example). \label{img:modulith_module_package}}
+    \caption{Internal package structure of single module (Modulith example).\label{img:modulith_module_package}}
 \end{figure}
 
 \begin{figure}
@@ -96,7 +96,7 @@ Every module encapsulates its own tables completely independent of the rest. Tab
 % \end{figure}
 
 \section{Microservices example}
-In this example the Modulith implementation was further split into 5 microservices: Item, Cart, Invoice, Order and Payment. Modulith originally contained 4 packages of which 1 combined logic around Shopping Cart and Items, so it was split into two for the volume to be more consistent across microservices. The dependency graph between services is displayed on Diagram \ref{img:microservices_dependency}.
+In this example the Modulith implementation was further split into 5 microservices: Item, Cart, Invoice, Order and Payment. Modulith originally contained 4 packages of which 1 combined logic around Shopping Cart and Items, so it was split into two for the volume to be more consistent across microservices. The dependency graph between services is displayed on Figure~\ref{img:microservices_dependency}.
 
 Spliting Modulith into services requires exposing additional functionality over the network, since Modulith modules were communicates with other modules via inter-process communication. Following additional endpoints had to be created (compared to Monolith) and corresponding clients to satisfy defined interfaces.
 
@@ -116,7 +116,7 @@ Whole application is compiled into single binary, but in production it would be 
 \begin{figure}
     \centering
     \includesvg[width=0.7\textwidth]{images/microservices_dependency.svg}
-    \caption{Diagram displaying dependency between micro-services. \label{img:microservices_dependency}}
+    \caption{Dependency between micro-services. \label{img:microservices_dependency}}
 \end{figure}
 
 \subsection{Database}
