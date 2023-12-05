@@ -14,20 +14,21 @@ Modulith is a better structured Monolith with ability to scale. It still has nat
     \caption{Mondulith architecture. Modules encapsulate logic and its own data. \label{img:modulith_architecture}}
 \end{figure}
 
-\subsection{Performance}
+\subsection{Characteristics}
+\subsubsection{Performance}
 Running as a single process, gives this architecture near same properties concerning performance as for Monolith \ref{section:monolith:performance} with a little drawback due to its added abstraction and isolation of data storage across modules, but the modularity being huge improvement in long-term maintainability. The Modulith architecture does not scale itself, but rather presume incremental transforming into microservices when the need arises. The right question is how much do we really need our architecture to scale. When starting a project, we can have some expectation on system load, but with how dynamically today project change from nearly from day to day, it usually starts as products A and finishes as product Z, so our presumptions on start will have to be adjusted as well. With that being sad, it is nearly impossible to guess what needs to be scaled beforehand, and rather have architecture, which allows us build fast with minimal overhead and with ability to scale once we actually need it. Also, if we look on modern hardware, we can find affordable up to 128 cores servers, which can easily run our wildest applications even without getting into distributed systems. Programming languages were adapted over the years as well: NodeJS with even loop can handle easily thousands of connections in single thread, Java recently got virtual threads (virtual threads), Golang has goroutines and Rust has asynchronous programming. All of those tools allows writing effective code when dealing with IO taks, which is what most of today applications are mostly made of.
 
 Once we have to scale this architecture, some modules are moved into separated service, heading towards microservices and the negative aspects of distributed system will start appear - mainly the network unreliability and latency, more discussed in Microservice section \ref{section:microservices:performance}.
 
 
-\subsection{Maintainability}
+\subsubsection{Maintainability}
 This is where the Monolith has been proved to be very problematic and the Microservice shines. Enforcing modularity on architecture level turned out to be essential in long-term maintenance. In my experience all projects usually begin as beautiful things and over time got messy. In my own opinion this is primarily caused by laziness of us developers. If there is some shortcut we can use, we will and say to ourselves: `I will fix it later', which off course never happens. I am not saying this happens all the time, but there are times, when deadlines start breathing on our neck and forcing us to do things faster. So, when we remove some of those shortcuts as were in Monolith, which allowed to do anywhere anything and force modularity on architecture level as in Modulith, developers has no other choice then to do it properly, since there will be no other way. It does mean that some features will take few minutes or hours more, but this will be well invested time compared to searching for mysterious bugs in Monolith where much, much more time is spent.
 
-\subsection{Sustainability}
+\subsubsection{Sustainability}
 The modularity gives big flexibility and allows for faster iterations to better adapt for changing business requirements as well as for architecture change.
 
-\subsection{Testability}
+\subsubsection{Testability}
 Testing is very similar as for Microservice, since the whole application is split into modules, which can be tested independently. The big advantage even over Microservice is the single process nature, which allows testing using convention tools and frameworks, which were created for Monoliths.
 
-\subsection{Complexity}
+\subsubsection{Complexity}
 In terms of complexity the Modulith architecture sits somewhere between Monolith and Microservice. In its nature it is not a distributed system as Microservices, so there are no network issues and deployment process is as simple as for Monolith. Until we start running modules in separated service, we get partially distributed system, and the complexity arises. The advantages of Modulith is the incremental migration to distributed system and ability to decide whether it is actually needed, because with Microservices we have distributed system from the start even if we want/need it or not. The same apply for implementing transactions, until we start moving towards distributed system the same transaction patterns can be implemented as were for Monolith. Distributed transactions will be discussed later in Microservice section \ref{section:microservices:complexity}.

@@ -2,11 +2,10 @@
 \label{section:microservices}
 Many people consider this architecture as solution for every problem. What architecture for new project? Microservices. Is your application slow? Convert it to Microservices. Experiencing slow development? Microservices are the solution. Fair enough, it really does change the game and there are definitely projects where it is the best possible solution. Although in my experience, people tend to use this architecture carelessly as the only correct solution, ignoring its disadvantages, and there are definitely projects where for example monolith would be more suited for task and save a lot of many and time. So what exactly is it?
 
-\begin{quote}
-    Microservices are independently releasable services that are modeled around a business domain. A service encapsulates functionality and makes it accessible to other services via networks—you construct a more complex system from these building blocks. One microservice might represent inventory, another order management, and yet another shipping, but together they might constitute an entire ecommerce system. Microservices are an architecture choice that is focused on giving you many options for solving the problems you might face. \cite{BUILDING_MS_WHAT_ARE}
 
-    They are a type of service-oriented architecture, albeit one that is opinionated about how service boundaries should be drawn, and one in which independent deployability is key. They are technology agnostic, which is one of the advantages they offer. \cite{BUILDING_MS_WHAT_ARE}
-\end{quote}
+Microservices are services that can be released independently and are modeled around a business domain. A service is a building element from which you create a more complicated system. It encapsulates functionality and makes it available to other services via networks. A single microservice may represent inventory, another order processing, and another shipping, but taken as a whole, they could make up a whole e-commerce system. Microservices are an architecture approach that aims to provide you with a multiple of solutions for resolving potential issues. \cite{BUILDING_MS_WHAT_ARE}
+
+They are a kind of service-oriented architecture, even if they have strong opinions about the appropriate way to define service boundaries and emphasize the importance of independent deployability. One of the benefits they have is that they are technology-agnostic. \cite{BUILDING_MS_WHAT_ARE}
 
 
 From a technology viewpoint, microservices expose the business capabilities that they encapsulate via one or more network endpoints \cite{MON_TO_MS_MICROSERVICE} (for example, a queue or a REST API \cite{BUILDING_MS_WHAT_ARE}, as shown in Figure~\ref{img:microservices_basic}). Microservices communicate with each other via these networks — making them a form of distributed system. They also encapsulate data storage and retrieval, exposing data, via well-defined interfaces. So databases are hidden inside the service boundary. \cite{MON_TO_MS_MICROSERVICE}
@@ -16,7 +15,7 @@ Compared to the discussed Modulith in section \ref{section:modulith}, Microservi
 % how to find correct size of microservice
 What is the correct size of a single Microservice? The \textit{micro} part of the word is misleading. The Microservices were created primarily for needs of big companies and original idea behind it was to have a dedicated team of developers behind nearly Microservices. And this is something, which is not possible in most of the companies with just couple of developers. The practice I have seen in reality is, that just couple of developers are running dozens of microservices or even in one project I was single developer managing over 20 microservices (experience described in Chapter \ref{chapter:personal_experience}). The `micro' just means completely different thing for big companies like Netflix or Amazon and for small/medium projects.
 
-Building Microservice architecture requires a lot of planning to properly set boundaries to individual services and keep an eye on it. It is much harder to do bigger refactoring compared to Monolithic architecture even though it should be easier due to the service isolation. Unfortunately in practice due to business requirements it is impossible to create something completely independent. Example: Lets image we have microservice with some HTTP API, which we need to split. Other service are communicating with it through the API. We need to hold the compatibility for API for a long time, since we most likely do not know exactly which services are using which API and if it is safe to remove anything. So, we split the service, the old service will have the full original API, the new service just the part of the API, which it can handle. For the old service additional backward compatibility logic needs to be implemented for those parts of API, which were moved to second service. And this compatibility needs to be maintained for unspecified period of time - this depend if we have any strategy how to safely remove anything and make sure it does not break other parts of system. On other hand in Modulith we would just split the one module into two, and we very easy find all places which uses the old functionality and update it accordingly - how to find it? IDE (basic feature `find usage'), compiler, static code analyses. The compiler makes sure automatically all interfaces and implementations are compatible, and it does for free out of box. Just something, which is not easily possible in Microservices world.
+Building Microservice architecture requires a lot of planning to properly set boundaries to individual services and keep an eye on it. It is much harder to do bigger refactoring compared to Monolithic architecture even though it should be easier due to the service isolation. Unfortunately in practice due to business requirements it is impossible to create something completely independent. Example: Lets imagine we have microservice with some HTTP API, which we need to split. Other service are communicating with it through the API. We need to hold the compatibility for API for a long time, since we most likely do not know exactly which services are using which API and if it is safe to remove anything. So, we split the service, the old service will have the full original API, the new service just the part of the API, which it can handle. For the old service additional backward compatibility logic needs to be implemented for those parts of API, which were moved to second service. And this compatibility needs to be maintained for unspecified period of time - this depend if we have any strategy how to safely remove anything and make sure it does not break other parts of system. On other hand in Modulith we would just split the one module into two, and we very easy find all places which uses the old functionality and update it accordingly - how to find it? IDE (basic feature `find usage'), compiler, static code analyses. The compiler makes sure automatically all interfaces and implementations are compatible, and it does for free out of box. Just something, which is not easily possible in Microservices world.
 
 
 \begin{figure}
@@ -35,24 +34,25 @@ Netlix is a company considered as pioneer in Microservices adoption together wit
 
 
 
-\subsection{Performance}
+\subsection{Characteristics}
+\subsubsection{Performance}
 \label{section:microservices:performance}
 Microservices being distributed system, it necessarily adds higher latency compared to Monolithic systems, but it brings many advantages which can easily balance this negative side. The biggest being the scalability. Microservices are very small unis, which can usually start up in couple of seconds, so it can be scaled based on current workload fully leveraging cloud computing and pricing per usage rather having oversized infrastructure. On other hand scaling does not work out of the box and it requires system to support it. Also, it is not possible to scale up infinitly and some bottleneck will stand out, usually being database.
 
 
-\subsection{Maintainability}
+\subsubsection{Maintainability}
 % Distributed tracing
 Distributed system are much harder to maintain due to added complexity. Even thing like investigating some issue requires collecting logs from multiple servers, aggregating them together and having tool to effectively search through it. Or even better way is to use Distributed tracing, which can generate vast amount of data even on simple systems. Modifications in microservices have isolated effect withing microservice and can be deployed in matter of just few hours (or even minutes).
 
-\subsection{Sustainability}
+\subsubsection{Sustainability}
 The isolated microservices give big flexibility and allows for faster iterations (even faster than Modulith) to better adapt for changing business requirements as well as for architecture change.
 
-\subsection{Testability}
+\subsubsection{Testability}
 In theory testing should be breeze, but in really not so much, because services are usually part of a larger business-logic dependent on other services to complete the logic. Practices for service-testing (e.g. mocks, API-contract testing) are known, but they are very complex and costly to implement. For comparison in  monoliths we have many proved testing strategies including end-to-end with many great frameworks/libraries available. \cite{MC_TESTABILITY}
 
 Service can often become inaccessible, due to issue on many layers of network or security operated by an orchestrating software. These kinds of problems are hard to simulate in-order to prevent faults from reaching production.
 
-\subsection{Complexity}
+\subsubsection{Complexity}
 \label{section:microservices:complexity}
 % orchestrator + deployment
 Breaking whole system into isolated `micro' pieces (services) makes it easier for developers to implement new features and work independently, but it definitely makes the whole system more complicated, because of added network communication and more complicated deployment. Network communication is required for inter-service communication and also for outside world, and there is a lot we can choose from. Starting from classical patterns like request-response or more data driven approaches like observer or publish-subscribe.

@@ -23,9 +23,12 @@ These single-process monoliths probably represent the vast majority of the monol
 % -------------------------------------------------------
 \subsection{The Modular Monolith}
 \label{section:modular_monolith}
-`As a subset of the single-process monolith, the modular monolith is a variation in which the single process consists of separate modules. Each module can be worked on independently, but all still need to be combined together for deployment, as shown in Figure \ref{img:monolith_single_process_modular}.' \cite{BUILDING_MS_MONOLITH}
+
+The modular monolith is a subset of the single-process monolith, where the single process is composed of distinct modules. Although each module can be worked on separately, deployment still requires all modules to be merged together into single unit as shown in Figure \ref{img:monolith_single_process_modular}. \cite{BUILDING_MS_MONOLITH}
 
 It represents nice evolution step for Monolithic systems. Well-defined module boundaries can allow for a high degree of parallel work, while avoiding challenges associated with distributed microservice architecture and still have simple deployment topology \cite{BUILDING_MS_MONOLITH}.
+
+The biggest problem with this architecture is that although the logic is separated into modules, the storage is usually monolithic and represented by a database with relationships. This means that the separation is not effectively applied to data, but only to code.
 
 
 \begin{figure}
@@ -60,9 +63,7 @@ In the world of business, creating solutions to automate the execution of busine
 \end{itemize}
 All of those negative aspects listed above led to creation of Service-Oriented architecture with the idea of creating reusable services, requiring high-level of interoperability between service and numerous potential service consumers, with standardized contract, loosely coupled and composable, which requires to be standardized with cross-service data exchange.
 
-\begin{quote}
-    `SOA, or service-oriented architecture, defines a way to make software components reusable and interoperable via service interfaces. Services use common interface standards and an architectural pattern so they can be rapidly incorporated into new applications. This removes tasks from the application developer who previously redeveloped or duplicated existing functionality or had to know how to connect or provide interoperability with existing functions.' \cite{IBM_SOA}
-\end{quote}
+Service-oriented architecture, or SOA, describes how to use service interfaces to make software components interoperable and reusable. Services can be quickly integrated into new applications by using an architectural pattern and common interface standards. As a result, the application developer is relieved of duties that previously required them to rewrite or replicate existing functionality or figure out how to link or ensure interoperability with it. \cite{IBM_SOA}
 
 At the start, companies were launching big organization wide initiatives, to convert everything into Service oriented architecture, which promised a lot of benefits. It was laborious and time-consuming, and often the company's development team had to re-architecture all existing systems as well as design new applications according to new principles. A different way to approach problems of SOA was Enterpise service bus (ESB), which can be implemented and deployed in a short period of time acting as a central solution for integrations. This approach with ESB has been quickly adopted and basically everyone in business who have SOA architecture is using it. It allows preserving existing legacy Modulith systems, just by exposing from them service via API and creating integration through ESB.
 
@@ -82,7 +83,9 @@ The complexity of implementation to achieve actual reusability is huge and has n
 
 % Going more low level - developer point of view, maybe some example?
 
-\subsection{Performance}
+\subsection{Characteristics}
+
+\subsubsection{Performance}
 \label{section:monolith:performance}
 Deployment as a single process brings big benefit in terms of performance compared to any type of distributed system, because network comunication is subject to the laws of physics and always add latency. Whereas inter process communication has the lowest latency possible making Monolith in theory the fastest architecture out here. This rule will apply, until the need to scale the application arises and vertical scaling is not an option anymore. Since the whole system is deployed as one unit, horizontal scaling means running multiple instances of the whole monolith, which is in most cases not very efficient, because usually the system does not have uniform load, but some parts of the system does the most of the work, and we still have those other parts taking up resources even though we actually don't even need them.
 
@@ -92,21 +95,21 @@ Deployment as a single process brings big benefit in terms of performance compar
 % scalability
 % 
 
-\subsection{Maintainability}
+\subsubsection{Maintainability}
 Maintenance is tightly related to Complexity. Usually the more complex application, the more hard to maintain and with monolithic high coupling it is very bad at it. A single modification can have power to affect the entire application and maintaining legacy Monoliths has become nightmare for many developers, since even smallest change requires vast knowledge of the whole system. Although there are some positive sides, having debugging and logging much easier than with any kind of distributed system, so finding the issue is usually the simple step compared to creating the actual fix.
 
 % Easy debugging | logging
 
-\subsection{Sustainability}
+\subsubsection{Sustainability}
 % Not sure what should be here
 The maintenance cost of Monolith is huge. Either the operational costs due to its inability to scale properly, so we have to have oversized infrastructure, but also having developers with vast knowledge of the system and well-defined testing process. Introducing any kind of architecture change is nearly impossible and integrations have proven to be complicated/problematic as well.
 
-\subsection{Testability}
+\subsubsection{Testability}
 Since in classical monolith, there are no boundaries, it is nearly impossible to test just specific parts of the system in isolation, because the whole system needs to be present in order for it to function. So, writing end-to-end tests is usually the answer, but it has much harder to write and even run them, because they take much more time, compared to testing just isolated parts.
 
 With modular monolith, the testing is much easier, since it allows testing just specific modules. The tests are smaller, which results in higher speed and are easier to write, because developer can focus just on the specific part of the system.
 
-\subsection{Complexity}
+\subsubsection{Complexity}
 High coupling makes it very hard to do any modification, because it requires vast knowledge of the whole system and as the developer team grows they start to get into each other way, wanting to change the same piece of code. Also, confusion around ownership of the code arouses and who makes the decisions \cite{MON_TO_MS_MONOLITH}.
 
 The architecture itself (Single process or distributed monolith) does not enforce any kind of restriction on how the application should be structured and gives developer maximal freedom. In my experience this has proven as fatal in many projects, since it presents heavy burden and if not properly designed in the beginning and kept in check during the whole development cycle, it can very easily lead to `Big ball of mud' \cite{BIG_BALL_OF_MUD}.
