@@ -52,23 +52,42 @@ Requirements generally fall into two categories:
 
 Another thing that can influence the decision is the experience of the team. If we have a team of developers with a lot of experience in building monoliths and no experience with distributed systems, choosing microservice architecture as a starting point may turn out to be a decision we will regret. Microservices require a completely different mindset to the one the team was used to when building monoliths. And we could easily end up with something that should be avoided at all costs: \textit{Distributed Monolith}.
 
-\section{Modulith lifecycle}
-The ability of an architecture to adapt to different requirements over time is an important quality. Modulith is situated between Monolith and Microservices, which gives it the ability to easily convert back and forth between different architectural styles. The following text describes some examples of how Modulith can be used.
-
 \section{Building a new application}
 If you are building an application from the ground up, I think the Modulith is currently the best/safest choice. After all, why does everyone choose microservices in the first place? Because of performance? At the start of the project, we have some assumptions about the performance requirements, but they are still just "assumptions" and the actual performance issues are in most cases caused by the limitations of the actual implementation. Also, the performance requirements can change dramatically if the business goes in a different direction than expected at the beginning, and this is something that happens a lot in start-ups.
 
-So it could be the independence of microservices? The Modulith offers the same quality with modules. Only the microservices are more dramatically enforcing smaller scope, which can be leveraged for modules in the same way. What about testability? Again, modules can be tested in the same independent way as microservices, and even further using techniques known from monoliths such as end-to-end testing, without all the shenanigans associated with microservices and orchestrations. Maintainability? Modulith has a much simpler deployment strategy, less complex environment and is cheaper to host. Sustainability? The amount of work required to just merge two microservices into one is quite high, since you can't even effectively find all the defendants and update them all accordingly. On the other hand, since Modulith is just a single codebase, the relationships are there and visible just by using standard and proven tools, e.g. IDE with `find usage' feature. Also, any deep refactoring can be done in Modulith in a much easier way than in Microservice. The biggest negative aspect for small/medium projects lies in the ability of developers to properly define the scope and boundary of modules and more importantly to maintain it over time, as the individual microservices have a network boundary which is hard to cross, but with Modulith it is much easier as it is a repository with inter-process communication, but this can be largely avoided by setting up automated tools which will enforce the boundaries at code level directly by monitoring cross-module dependencies. The recommended project lifecycle may look like this
+So, the reason could be the independence of microservices? The Modulith offers the same quality with modules. Only the microservices are more dramatically enforcing smaller scope, which can be leveraged for modules in the same way. What about testability? Again, modules can be tested in the same independent way as microservices, and even further using techniques known from monoliths such as end-to-end testing, without all the shenanigans associated with microservices and orchestrations. Maintainability? Modulith has a much simpler deployment strategy, less complex environment and is cheaper to host. Sustainability? The amount of work required to just merge two microservices into one is quite high, since you can't even effectively find all the defendants and update them all accordingly. On the other hand, since Modulith is just a single codebase, the relationships are there and visible just by using standard and proven tools, e.g. IDE with `find usage' feature. Also, any deep refactoring can be done in Modulith in a much easier way than in Microservice. The biggest negative aspect for small/medium projects lies in the ability of developers to properly define the scope and boundary of modules and more importantly to maintain it over time, as the individual microservices have a network boundary which is hard to cross, but with Modulith it is much easier as it is a repository with inter-process communication, but this can be largely avoided by setting up automated tools which will enforce the boundaries at code level directly by monitoring cross-module dependencies. The recommended project lifecycle may look like this:
 
 % vývojáři musí správně nastavit scope a boundaries, složitější uhlídat, musí se správně nastavit ?procesy?
 
 \begin{enumerate}
-    \item Properly defined scope and boundaries of individual modules
-    \item Build the Modulith and scale as unit until it is efficient.
-    \item Identify modules having performance issues and move them into independent service (another Modulith).
-    \item Scale the independent Moduliths as required.
-    \item In case of need for additional granularity migrate to Microservices architecture.
+    \item \textbf{Modularization} Take the whole business domain and start divinding it into smaller parts until you reach single business responsibility per part. For every part properly define the scope and boundaries. This is usually impossible to get right the first time, so it is a more iterative process.
+    \item Create module for each defined part and expose its functionality over interface.
+    \item Module can use other modules functionality via defined interface.
+    \item Build the Modulith application
+    \item Prepare application to scale as a unit (see Figure~\ref{fig:scale_as_unit}) - running in multiple instances is usually required for high availability and better performance.
+    \item If performance is an issue, utilize Hybrid Modulith architecture. This should be implemented with caution, as it may not even be needed as long as the scalability achieved by the previous step is sufficient, since it introduces significant negative effects:
+          \begin{itemize}
+              \item Becomes a distributed system - network instability, higher latency, complexity, complicated debugging and logging.
+              \item More complicated deployment - some form of versioning is required to ensure compatibility between individual modules.
+              \item More code or tools - instead of just having interfaces and implementing them in separate modules, now they also need to be implemented to support network calls, so some client/server code needs to be implemented or ideally generated by additional tools.
+          \end{itemize}
+
+          If you are sure to continue, follow the steps:
+          \begin{enumerate}
+              \item Identify the module that is causing the performance problem
+              \item Move the module into a separate service, along with all its dependent modules, to eliminate network calls as much as possible, effectively creating two Moduliths with a network communication between them (Hybrid Modulith, see Figure~\ref{fig:hybrid_modulith}).
+              \item Scale both Moduliths independently according to load
+              \item Repeat the division into more Moduliths until sufficient performance is achieved. Note that using this step to the extreme may convert the architecture to microservices, which may be better suited in this case, see section~\ref{subsection:modulith_to_microservices} for more details.
+          \end{enumerate}
+          % \item *Optional* Identify modules having performance issues and move them into independent service (another Modulith).
+          % \item Scale the independent Moduliths as required.
+          % \item In case of need for additional granularity migrate to Microservices architecture.
+    \item Enforce module boundaries during whole application lifecycle and adapt them as business needs change
 \end{enumerate}
+
+
+\section{Modulith lifecycle}
+The ability of an architecture to adapt to different requirements over time is an important quality. Modulith is situated between Monolith and Microservices, which gives it the ability to easily convert back and forth between different architectural styles. The following text describes some examples of how Modulith can be used.
 
 % Monolith -> Modulith, mnohem snažší a iterativní oproti Monolith -> Microservice
 \subsection{Monolith to Modulith}
@@ -80,13 +99,7 @@ Instead of this radical approach of rewriting the whole system, which will basic
 \begin{enumerate}
     \item \textbf{Modularization} step imposes the restructuring of the code and the modularisation of the whole application, but without worrying about the problems associated with a distributed system (network reliability, latency, complexity). Proper focus can be invested in defining modules, their responsibilities and boundaries. Depending on the project, the scope of modules can vary from complex modules to individual responsibilities per module.
     \item \textbf{Scale unit} step is to prepare the application to scale by running multiple instances. Monolithic systems are usually stateful or require some form of synchronisation for some of their functionality. In this step, all these potential or actual barriers to running multiple instances need to be resolved or replaced with solutions that can scale. Now the application can achieve high availability and increased performance by scaling the entire instance. The architecture has now reached the definition of modularity.
-    \item \textbf{Scale modules} step takes scalability even further by allowing individual modules or groups of modules to be scaled, rather than the whole application as a unit. This should be implemented with caution, as it may not even be needed as long as the scalability achieved by the previous step is sufficient, and it also introduces significant negative effects:
-          \begin{itemize}
-              \item Becomes a distributed system - network instability, higher latency, complexity, complicated debugging and logging.
-              \item More complicated deployment - some form of versioning is required to ensure compatibility between individual modules.
-              \item More code or tools - instead of just having interfaces and implementing them in separate modules, now they also need to be implemented to support network calls, so some client/server code needs to be implemented or ideally generated by additional tools.
-          \end{itemize}
-          By completing the \textit{Scale modules} step, the architecture reaches the state defined in this thesis as \textit{Hybrid Modulith}.
+    \item \textbf{Scale modules} step takes scalability even further by allowing individual modules or groups of modules to be scaled, rather than the whole application as a unit. By completing the step, the architecture reaches the state defined in this thesis as \textit{Hybrid Modulith}.
 \end{enumerate}
 
 \begin{figure}
@@ -105,13 +118,13 @@ Instead of this radical approach of rewriting the whole system, which will basic
     \begin{subfigure}{\textwidth}
         \centering
         \includesvg[width=0.4\textwidth]{images/monolith_to_modulith_2.svg}
-        \caption{Scale unit step (reached Modulith)}
+        \caption{Scale unit step (reached Modulith)\label{fig:scale_as_unit}}
     \end{subfigure}%
     \hfill
     \begin{subfigure}{\textwidth}
         \centering
         \includesvg[width=0.7\textwidth]{images/monolith_to_modulith_3.svg}
-        \caption{Scale modules step (reached Hybrid Modulith)}
+        \caption{Scale modules step (reached Hybrid Modulith \label{fig:hybrid_modulith})}
     \end{subfigure}
     \caption{Conversion steps from Monolith to Hybrid Modulith}
     \label{fig:monolith_to_modulith_steps}
@@ -121,6 +134,7 @@ Instead of this radical approach of rewriting the whole system, which will basic
 
 % Modulith -> Microservice, multiple teams, want to add network boundaries and more granular responsibility distribution
 \subsection{Modulith to Microservice}
+\label{subsection:modulith_to_microservices}
 Over time, the modular architecture may no longer meet the needs of the project. Examples of reasons: more fine-grained granularity of the application is required, teams need more independence, lack of technology agnosticism, or a more distributed solution is desired to achieve higher availability or scalability.
 
 After properly weighing all the pros and cons, a decision can be made to migrate to a microservice architecture. The transformation should ideally take place in natural steps over time as requirements and system needs change. Modulith consists of individually scalable modules with defined boundaries. Moving to a microservice architecture is about refining these modules and transforming them into microservices by defining fine-grained boundaries. In cases where modules have been defined with small scopes, the transformation can be as simple as 1 module to 1 microservice, but usually modules are split into multiple microservices because they have a larger scope compared to microservices, which are usually driven by the principle of single business responsibility. The example transformation step is shown in figure~\ref{fig:modulith_to_microservices_steps}.
