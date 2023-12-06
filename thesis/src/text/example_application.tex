@@ -38,11 +38,11 @@ The application needs to be able to run in multiple instances so that it can be 
 \section{Monolith example}
 This example is implemented as a monolithic system. Basically it is a three tier application: presentation (HTTP API), application and data (database). Figure~\ref{img:monolith_db_schema} describes the internal structure of the application packages. \textit{Routes} package contains path mapping for endpoint handlers defined in \textit{endpoints}. Handlers contain simple logic definition, more complex logic is in \textit{services} and data manipulation around the database is in \textit{database}.
 
-\begin{figure}
-    \centering
-    \includesvg[width=0.7\textwidth]{images/monolith_package.svg}
-    \caption{Internal package structure of Monolithic example. \label{img:monolith_package}}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includesvg[width=0.7\textwidth]{images/monolith_package.svg}
+%     \caption{Internal package structure of Monolithic example. \label{img:monolith_package}}
+% \end{figure}
 
 
 \subsection{Database}
@@ -74,17 +74,17 @@ In this particular example, the implementation to expose the capabilities define
 
 The Modulith application has been extended to run in 3 modes, depending on the value of environment variables. In the first mode it runs as a single process. In the second mode it runs as a single process without invoice implementation and uses the invoice client. In the third mode it runs only the invoice implementation and this can be scaled to many instances to improve performance. Load balancing of requests to the invoice service instances is done using Nginx.
 
-\begin{figure}
-    \centering
-    \includesvg[width=0.7\textwidth]{images/modulith_module_package.svg}
-    \caption{Internal package structure of single module (Modulith example).\label{img:modulith_module_package}}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includesvg[width=0.7\textwidth]{images/modulith_module_package.svg}
+%     \caption{Internal package structure of single module (Modulith example).\label{img:modulith_module_package}}
+% \end{figure}
 
-\begin{figure}
-    \centering
-    \includesvg[width=0.7\textwidth]{images/modulith_package.svg}
-    \caption{Module dependency graph of Modulith example. \label{img:modulith_package}}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includesvg[width=0.7\textwidth]{images/modulith_package.svg}
+%     \caption{Module dependency graph of Modulith example. \label{img:modulith_package}}
+% \end{figure}
 
 \subsection{Database}
 Each module encapsulates its own tables, completely independent of the rest. The tables are the same as for the monolithic example on diagram~\ref{img:monolith_db_schema}, but the relations between modules have been removed. The schema consists of four partitions with relations preserved within the partition: the first partition consists of the invoice table, the second of the payment table, the third of the order table with rel\_item\_order and the last of the item, cart and rel\_item\_cart tables. Each module will have its own database pool with a maximum of 2 connections (8 in total).
@@ -113,14 +113,41 @@ Each microservice runs an HTTP server and exposes HTTP API for its internal API 
 
 The whole application is compiled into a single binary, but in production it would most likely be compiled into binaries per service. Which service is started is controlled by an environment variable.
 
-\begin{figure}
-    \centering
-    \includesvg[width=0.7\textwidth]{images/microservices_dependency.svg}
-    \caption{Dependency between microservices. \label{img:microservices_dependency}}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includesvg[width=0.7\textwidth]{images/microservices_dependency.svg}
+%     \caption{Dependency between microservices. \label{img:microservices_dependency}}
+% \end{figure}
 
 \subsection{Database}
 Each microservice encapsulates its own data. The database tables are the same as for the monolithic example on diagram~\ref{img:monolith_db_schema}, but the constraints outside the microservice scope have been removed. Database partitions are the same as for Modulith, only item table has been separated into its own service after splitting one package into two separate: cart and item. Each microservice will have its own database pool with a maximum of 2 connections (10 in total).
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includesvg[width=0.9\textwidth]{images/monolith_package.svg}
+        \caption{Internal package structure of Monolith example. \label{img:monolith_package}}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \includesvg[width=1\textwidth]{images/modulith_module_package.svg}
+        \caption{Internal package structure of single module (Modulith example).\label{img:modulith_module_package}}
+    \end{subfigure}
+    % \vspace{0.5cm}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includesvg[width=0.7\textwidth]{images/modulith_package.svg}
+        \caption{Module dependency graph of Modulith example. \label{img:modulith_package}}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includesvg[width=0.7\textwidth]{images/microservices_dependency.svg}
+        \caption{Dependency graph between microservices. \label{img:microservices_dependency}}
+    \end{subfigure}
+    \caption{Architecture diagrams for application examples build with architectures: Monolith, Modulith and Microservices.}
+\end{figure}
 
 \input{text/benchmark}
 
