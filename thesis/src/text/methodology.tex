@@ -149,7 +149,7 @@ After properly weighing all the pros and cons, a decision can be made to migrate
 % Microservice -> Modulith, sloučení služeb sníží overhead, zjednodušší vývoj, vhodně pro menší týmy
 \subsection{Microservice to Modulith}
 % pozn. různé technologie/jazyky
-Microservices architecture can become too complex to manage or simply too expensive to operate. The solution can be to convert microservices to Modulith, which simplifies deployment, resulting in cheaper infrastructure, and increases developer productivity by removing the complexity of a distributed system.
+Microservices architecture can become too complex to manage or simply too expensive to operate. An example of the former is described in detail in chapter~\ref{chapter:personal_experience}. The solution can be to convert microservices to Modulith, which simplifies deployment, resulting in cheaper infrastructure, and increases developer productivity by removing the complexity of a distributed system.
 
 The migration is easily done by converting microservices to modules as shown in Figure~\ref{fig:microservices_to_modulith_steps}, as they are already fully encapsulated and have a defined API. Network communication can be completely replaced by inter-process communication, or if some modules require scalability for performance, they can be converted to \textit{Hybrid Modulith} as specified in the \textit{Scale Modules} step of section~\ref{subsection:monolith_to_modulith}. Later, some modules may merge to take on more responsibility, but this depends on how module boundaries are set within the project.
 
