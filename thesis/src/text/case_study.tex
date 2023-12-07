@@ -1,4 +1,4 @@
-\section{Personal experience with Microservices}
+\section{Work project}
 At the time of writing, I have been working for the company for over a year on their financial wellbeing platform. The purpose of the platform is to help users connect with coaches and give them tools to educate themselves, get their finances under control and plan for the future.
 
 This project has been in development for over 4 years with only a handful of developers. The backend is written using microservices architecture in Rust and there are 2 frontend applications: native iOS and web. There are also two additional web frontends for administration. Admin portal is used by financial advisors to communicate with users and also by support/admin users. The latter is the customer portal, available to our customers (employers) to see their employees' interactions with our platform.
@@ -93,8 +93,8 @@ In terms of performance, there were only two services that had noticeable CPU us
 
 % Working on bigger feature it meant touching multiple services. Later the deployment required to check all not-deployed work and figuring out what has been tested and can be deployed to production. This flow is most likely the same for all projects, just for Microservices it is easier compared to Monolithic since the change are usually much smaller.
 
-\section{Experience with my personal project}
-In my spare time I am working on my personal IoT platform project (\href{https://github.com/founek2/IOT-Platform}{https://github.com/founek2/IOT-Platform}). Although I am only working on it solo, it has become quite a complex solution over the span of 5 years. The platform consists of a backend, a website as a multiplatform frontend, a library for embedded devices, bridges for third party devices and it is integrated with MQTT broker for communication and the automation tool node-red for defining visual flows. In 2021 I wrote my bachelor thesis completely based on this project and later I split the backend into multiple services, effectively migrating from monolithic architecture to microservices.
+\section{Personal project}
+In spare time I am working on personal Internet of Things platform project (repository located at \href{https://github.com/founek2/IOT-Platform}{https://github.com/founek2/IOT-Platform}). Although I am only working on it solo, it has become quite a complex solution over the span of 5 years. The platform consists of a backend, a website as a multiplatform frontend, a library for embedded devices, bridges for third party devices and it is integrated with MQTT broker for communication and the automation tool node-red for defining visual flows. In 2021 I wrote my bachelor thesis completely based on this project and later I split the backend into multiple services, effectively migrating from monolithic architecture to microservices.
 
 The reason behind the migration at that time was to introduce some boundaries between different parts of the application. The backend consisted of 3 microservices. The \textit{Authentication} microservice handled passwords, tokens and access control. The second microservice was subscribed to the MQTT broker and stored all changes in a database and sent commands to the devices. And the third was the biggest, as it implemented most of the API exposed to the front-end (it consisted mainly of simple CRUD operations).
 
