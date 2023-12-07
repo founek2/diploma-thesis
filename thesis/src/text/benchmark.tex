@@ -22,6 +22,7 @@ All benchmarks results will originate from running 10 parallel tests, totally 10
 
 
 \section{Benchmark results}
+\label{section:benchmark_results}
 
 \subsection{Application scenario}
 The first scenario consists of going through the whole application flow as defined on Figure~\ref{img:benchmark_flow}, which should represent evenly distributed load on the whole system. Client load list of houndred items and adds one random into his shopping cart. This repeats 10 times, after that client creates order, retrieves invoice information and pays for it. The application cosists of database queries and two harder jobs, which represents possible real world task. The first is CPU intensive task will be done during creation of order, where application generates PDF and also calculates 41st Fibonacci number to add more cpu load. The second big task, which represents waiting for 3rd party service is done during handling payment, which is implemented as 500~ms sleep.
