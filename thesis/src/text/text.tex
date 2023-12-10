@@ -2,19 +2,30 @@
 %---------------------------------------------------------------
 % \chapter{Introduction}
 % uncomment the following line to create an unnumbered chapter
-\chapter*{Introduction}\addcontentsline{toc}{chapter}{Introduction}\markboth{Introduction}{Introduction}
+% \chapter*{Introduction}\addcontentsline{toc}{chapter}{Introduction}\markboth{Introduction}{Introduction}
 %---------------------------------------------------------------
+
+\chapter*{Introduction}
+\setcounter{page}{1}
+
+Software architecture is the foundation of every application. Like foundation is construction, it has profound effect on the quality of what is build on top of it. As such, it holds a great importance in terms of the successful development and maintenance of the whole system. Architecture serves as a blueprint for a system. It provides an abstraction to manage the system complexity and establish a communication and coordination mechanism among components. Since the dawn of software development, the Monolith architecture has been the industry's favored solution.  However, the increasing complexity of applications has brought to light its limitations in terms of scalability, modularity and maintenance. Since then, there has been a search for a new type of architecture that will overcome these limitations.
+
+Several approaches have been tried, such as Service Oriented Architecture, which seemed promising, but none have matched the popularity of the Monolith. However, more than ten years ago, the Microservices architecture emerged and has spread extensively across the industry, becoming the new standard. Microservices shine at solving the most pressing problem which has risen with constantly increasing number of application consumers, the scalability by allowing to scale horizontally individual parts of the system on demand. The entire application is split into small components with limited responsibility called ``microservice'', which further improves maintenance and makes the system easier to understand.
+
+Unfortunately, Microservices constitute a type of distributed system that introduces significant complexity to the application and complicates deployment. They undoubtedly offer great benefits for sizeable projects with many development teams, yet smaller and medium-sized projects frequently overlook alternative options like Modular architecture. It falls midway between Monolith and Microservices, combining the effortless deployment of Monolith and modularity of Microservices without the complexity of distributed system. The scalability can be achieved later as well by utilizing hybrid approaches.
+
+The objective of this thesis is to elucidate the frequently overlooked disadvantages of Microservices and recommend modern modular alternatives. This is imperative as Microservices can significantly increase project expenses, impede development progress and even result in project failure in the worst-case scenario. The first chapter of the thesis is devoted to a detailed analysis of the Monolith, Modular and Microservices architectures, culminating in a comparative analysis in relation to several factors such as communication, maintenance, deployment and complexity. In the second chapter, an example application is created for each type of architecture and comprehensively analyzed concerning performance and latency. The third chapter presents the authors' personal experience after working over a year on a project utilizing Microservices architecture established four years prior, as well as from personal project that was initially converted to Microservices and then to Modular architecture. The thesis concludes with the creation of a methodology for selecting the appropriate architecture for a new project and how it can be applied and further modified over the course of the application's lifecycle.
 
 % vymezení rozsahu - primárně malé až střední projekty, web-based architecture (not Performance apps)
 
-\setcounter{page}{1}
+
 
 % The following environment can be used as a mini-introduction for a chapter. Use that any way it pleases you (or comment it out). It can contain, for instance, a summary of the chapter. Or, there can be a quotation.
-\begin{chapterabstract}
-    \lipsum[1]
-\end{chapterabstract}
+% \begin{chapterabstract}
+%     \lipsum[1]
+% \end{chapterabstract}
 
-\lipsum[1]
+% \lipsum[1]
 
 %---------------------------------------------------------------
 \chapter{Architectures}
