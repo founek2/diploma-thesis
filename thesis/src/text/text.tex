@@ -7,6 +7,17 @@
 
 \chapter*{Introduction}
 \setcounter{page}{1}
+% state the general topic and give some background
+% provide a review of the literature related to the topic
+% define the terms and scope of the topic
+% outline the current situation
+% evaluate the current situation (advantages/ disadvantages) and identify the gap
+% identify the importance of the proposed research
+% state the research problem/ questions
+% state the research aims and/or research objectives
+% state the hypotheses
+% outline the order of information in the thesis
+% outline the methodology
 
 Software architecture is the foundation of every application. Like foundation is construction, it has profound effect on the quality of what is build on top of it. As such, it holds a great importance in terms of the successful development and maintenance of the whole system. Architecture serves as a blueprint for a system. It provides an abstraction to manage the system complexity and establish a communication and coordination mechanism among components. Since the dawn of software development, the Monolith architecture has been the industry's favored solution.  However, the increasing complexity of applications has brought to light its limitations in terms of scalability, modularity and maintenance. Since then, there has been a search for a new type of architecture that will overcome these limitations.
 
@@ -29,7 +40,7 @@ The objective of this thesis is to elucidate the frequently overlooked disadvant
 
 %---------------------------------------------------------------
 \chapter{Architectures}
-\ref{chapter:architectures}
+\label{chapter:architectures}
 In this chapter we will look into classical Monolithic architecture, currently what is considered the most famous called Microservices and what can be found somewhere between: Modulith and Service-Oriented architecture. Apart from defining the architectures, we will compare them among the following lines:
 \begin{itemize}
     \item Performance defines how much workload application can handle, how much latency is present during processing and how well application can scale.
@@ -44,19 +55,22 @@ In this chapter we will look into classical Monolithic architecture, currently w
 \input{text/microservice}
 \input{text/architecture_summary}
 
-\chapter{Example application}
-\label{chapter:example_application}
-\input{text/example_application}
 
 %---------------------------------------------------------------
-\chapter{Case study real application}
+\chapter{Financial well-being project}
 \label{chapter:personal_experience}
-In this chapter we'll take a closer look at one of the projects I've worked on that was built from the ground up using a microservices architecture. And also on one of my personal projects that I have converted to microservices and later to Modulith. I will share my experience from the position of a backend developer on what it means to work on microservices architecture alone and in a team.  What are the downsides and upsides for developers and the whole application cycle (planning, implementing, bug fixing and deployment).
+In this chapter we'll take a closer look at one of the projects I've worked on that was built from the ground up using a microservices architecture. I will share my experience from the position of a backend developer on what it means to work on microservices architecture alone and in a team. What are the downsides and upsides for developers during the whole application cycle (planning, implementing, deployment, maintenance).
 
 \input{text/case_study}
 
 %---------------------------------------------------------------
-\chapter{Choosing the right architecture}
-In software engineering there is no silver bullet. Every project has its spec own specifics and requirements. Some solution can work greatly for one project and be catastrophic for others. In following text, we will look closely on architecture decision-making for projects and try to come up with straight forward methodology.
+\chapter{Proof of concept}
+\label{chapter:example_application}
+\input{text/example_application}
+
+
+%---------------------------------------------------------------
+\chapter{Methodology}
+% In software engineering there is no silver bullet. Every project has its spec own specifics and requirements. Some solution can work greatly for one project and be catastrophic for others. In following text, we will look closely on architecture decision-making for projects and try to come up with straight forward methodology.
 
 \input{text/methodology}
