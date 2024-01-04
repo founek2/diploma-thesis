@@ -4,7 +4,7 @@ There are two types of scenarios, which will be measured to get inside into bott
 
 Benchmarking will be done for following test scenarios with various configurations:
 \begin{itemize}
-    \item Application scenario - focusing on even load of whole application testing IO and CPU intensive operations.
+    \item Performance scenario - focusing on even load of whole application testing IO and CPU intensive operations.
     \item Latency scenario - focusing primarily on IO operations and handling a lot of fast requests.
 \end{itemize}
 
@@ -24,7 +24,7 @@ All benchmarks results will originate from running 10 parallel tests, totally 10
 \section{Benchmark results}
 \label{section:benchmark_results}
 
-\subsection{Application scenario}
+\subsection{Performance scenario}
 The first scenario consists of going through the whole application flow as defined on Figure~\ref{img:benchmark_flow}, which should represent evenly distributed load on the whole system. Client load list of houndred items and adds one random into his shopping cart. This repeats 10 times, after that client creates order, retrieves invoice information and pays for it. The application cosists of database queries and two harder jobs, which represents possible real world task. The first is CPU intensive task will be done during creation of order, where application generates PDF and also calculates 41st Fibonacci number to add more cpu load. The second big task, which represents waiting for 3rd party service is done during handling payment, which is implemented as 500~ms sleep.
 
 \begin{figure}
@@ -38,7 +38,7 @@ In Table \ref{table:benchmark_baseline} are results of benchmark which will act 
 \begin{table}
     \begin{tabular}{ |p{3cm}||p{3cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
         \hline
-        \multicolumn{5}{|c|}{Benchmark results scenario 1}                           \\
+        \multicolumn{5}{|c|}{Benchmark performance scenario}                           \\
         \hline
         Architecture  & Resources         & rps        & avg     & p(90)   & p(95)   \\
         \hline
@@ -55,9 +55,9 @@ The biggest bottleneck of first scenario is CPU bound task. To scale Monolith we
 In second measurement invoice package was moved into separated service implementing HTTP server. HTTP client is than passed in main server to whoever module required the invoice interface. The same benchmark was run for one, two, four and eight instances of invoice service and results can be seen in Table~\ref{table:benchmark_modulith_instances} along with scaled Microservices example. There is no difference between Modulith and Modulith with single invoice service instance, but having the invoice service scaled to two instances, it has more then doubled the speed. Adding more instances scales linearly until the main bottleneck becomes IO bound task during payment. Microservices scale as well as Modulith, but having more overhead (more network inter-service communication) they are slightly slower.
 
 \begin{table}
-    \begin{tabular}{ |p{4cm}||p{3cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
+    \begin{tabular}{ |p{4cm}||p{1.6cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
         \hline
-        \multicolumn{5}{|c|}{Benchmark results scenario 1}                                  \\
+        \multicolumn{5}{|c|}{Benchmark performance scenario}                                  \\
         \hline
         Architecture                & Resources & rps         & avg     & p(90)   & p(95)   \\
         \hline
@@ -94,7 +94,7 @@ This huge performance difference in Microservices was much more than what was in
 \begin{table}
     \begin{tabular}{ |p{3cm}||p{3cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
         \hline
-        \multicolumn{5}{|c|}{Latency scenario}                                       \\
+        \multicolumn{5}{|c|}{Benchmark latency scenario}                                       \\
         \hline
         Architecture  & Resources         & rps        & avg    & p(90)    & p(95)   \\
         \hline
@@ -120,7 +120,7 @@ To mitigate the inequality caused by database, all the database queries has been
 \begin{table}
     \begin{tabular}{ |p{3cm}||p{1.2cm}|p{3cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
         \hline
-        \multicolumn{6}{|c|}{Latency scenario with database}                                 \\
+        \multicolumn{6}{|c|}{Benchmark latency scenario with database}                                 \\
         \hline
         Architecture  & Extra latency & Resources         & rps        & avg     & p(90)     \\%& p(95)   \\
         \hline
@@ -136,7 +136,7 @@ To mitigate the inequality caused by database, all the database queries has been
         Microservices & 4\,ms         & 2.5\,CPU, 250\,MB & 110\,req/s & 85\,ms  & 126\,ms   \\ % & 138\,ms \\
         Microservices & 8\,ms         & 2.5\,CPU, 250\,MB & 60\,req/s  & 161\,ms & 232\,ms   \\ % & 249\,ms \\
         \hline
-        \multicolumn{6}{|c|}{Latency scenario with database replaced by static 2\,ms sleep } \\
+        \multicolumn{6}{|c|}{Benchmark latency scenario with database replaced by static 2\,ms sleep } \\
         \hline
         \rowcolor{Gray}
         Modulith      & 0\,ms         & 0.5\,CPU, 100\,MB & 668\,req/s & 14\,ms  & 17\,ms    \\ %& 21\,ms  \\
@@ -157,7 +157,7 @@ To mitigate the inequality caused by database, all the database queries has been
 
 
 \section{Summary}
-Three sample applications have been implemented, each using a different type of architecture. One used a monolithic architecture, the second a modular architecture and the last a microservices architecture. The different impact on the way the data has to be structured in the database and on the internal structure of the application depending on the architecture used was demonstrated. All applications were then subjected to two benchmarking strategies (performance and latency) and the results were discussed in detail, focusing mainly on the Modulith vs. Microservices comparison, with Modulith being the overall winner.
+Three sample applications have been implemented, each using a different type of architecture. One used a monolithic architecture, the second a modular architecture and the last a microservices architecture. The different impact on the way the data has to be structured in the database and on the internal structure of the application depending on the architecture used was demonstrated. During benchmarking, the database caused unexpected application slowdown, leading to its removal and replacement with static sleep for the latency benchmark scenario to obtain more representative results.
 
 
 % discuss parallel nature of Goroutines, a že většina práce je na Databázi

@@ -1,5 +1,5 @@
 
-If you are building an application from scratch, or just looking for a flexible architecture, I strongly believe that the Modulith is currently the best choice for the majority of projects. Based on the architecture summary from the first chapter Table~\ref{table:architecture_compare}r, the Modulith shares the best qualities of both monolithic and microservices architectures. My experience from financial projects in chapter~\ref{chapter:personal_experience} argues against microservices as an unnecessarily complex architecture and the benchmarks in chapter~\ref{chapter:example_application} confirm the superior performance of Modulith and the same ability to scale with the hybrid Modulith approach. Based on all the work and results, I have created a methodology that can be used as a guide for architecture decisions when starting a new project:
+If you are building an application from scratch, or just looking for a flexible architecture, I strongly believe that the Modulith is currently the best choice for the majority of projects. Based on the architecture summary from the first chapter Table~\ref{table:architecture_compare}, the Modulith shares the best qualities of both monolithic and microservices architectures. My experience from financial projects in chapter~\ref{chapter:personal_experience} argues against microservices as an unnecessarily complex architecture and the benchmarks in chapter~\ref{chapter:example_application} confirm the superior performance of Modulith and the same ability to scale with the hybrid Modulith approach. Based on all the work and results, I have created a methodology that can be used as a guide for architecture decisions when starting a new project:
 
 \begin{enumerate}
     \item \textbf{Modularization} - take the whole business domain and start dividing it into smaller parts until you reach single business responsibility per part. For each part properly define the scope and boundaries. Modeling around business domain has proven for Microservices to be the best approach\cite{BUILDING_MS_WHAT_ARE}, and it can easily be applied for Moduliths as well. This step usually impossible to get right the first time, so it is a more iterative process.
@@ -7,7 +7,7 @@ If you are building an application from scratch, or just looking for a flexible 
     \item Module can use other modules' functionality via defined interface.
     \item Build the Modulith application.
     \item Prepare application to scale as a unit (see Figure~\ref{fig:scale_as_unit}) - running in multiple instances is usually required for high availability and better performance.
-    \item If deployment is slow or process too complex, you can deploy modules individually (more about deployment in~\ref{section:modulith}).
+    \item If deployment is slow or process too complex, you can deploy modules individually (more about deployment at bottom of section~\ref{section:modulith}).
     \item If performance is an issue, utilize Hybrid Modulith architecture. This should be implemented with caution, as it may not even be needed as long as the scalability achieved by the previous step is sufficient. See section~\ref{subsection:modulith_to_hybrid_modulith} for more details.
         
           % \item *Optional* Identify modules having performance issues and move them into independent service (another Modulith).
@@ -184,7 +184,7 @@ The migration is easily done by converting microservices to modules as shown in 
 
 
 \section{Summary}
-The modular architecture methodology has been created as a step-by-step guide for new projects based on Modulith architecture. It defines how the business domain should be divided to modularise the application, how it should communicate internally to keep coupling low, and how it should evolve over time to increase performance and scalability. Each architecture step is detailed and illustrated with diagrams. The flexibility of Modulith even allows for a smooth transition back and fort between microservices and this architecture.
+The modular architecture methodology has been created as a step-by-step guide for new projects based on Modulith architecture. It defines how the business domain should be divided to modularise the application, how it should communicate internally to keep coupling low, and how it should evolve over time to increase performance and scalability. Each architecture step is detailed and illustrated with diagrams. The flexibility of Modulith even allows for a smooth transition back and forth between microservices and the said architecture.
 
 % TODO: At the start of planning phase, all criteria which will drive the decision should be specified, so they can be later used to transparently compare different solutions and choose the best of them. 
 

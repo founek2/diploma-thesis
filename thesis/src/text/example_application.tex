@@ -23,7 +23,7 @@ This is an application example of a real world system consisting of HTTP API, da
 
 The Client of the application can view items, add them to his shopping cart, place an order, retrieve an invoice and pay for it. Like most of the applications today, there are mainly operations querying data or saving data into database. The activity flow is described on Figure~\ref{img:app_activity_flow}. First, a session is created for the client, then the client loads items and adds everything he wants to his shopping cart. Later the client places an order, an invoice is generated in the background and the client can cancel the order or pay for it. To add more CPU intensive tasks, invoice generates PDF and also calculates 41st Fibonacci number.
 
-Candidates for the implementation programming language were Rust and Golang due to its minimal runtime (minimal impact on benchmarking). Winner is Golang because it's easier to use, good personal experience of the authors and better support for the Open Tracing project, which is used for monitoring from within the application during benchmarking. All applications are based on \textit{gorilla/mux} \cite{MUX} for http server + request routing library and \textit{Bun} \cite{BUN} as a lightweight ORM.
+Candidates for the implementation programming language were Rust and Golang due to its minimal runtime (minimal impact on benchmarking). Winner is Golang because it's easier to use, good personal experience of the author and better support for the Open Tracing project, which is used for monitoring from within the application during benchmarking. All applications are based on \textit{gorilla/mux} \cite{MUX} for http server + request routing library and \textit{Bun} \cite{BUN} as a lightweight ORM.
 
 PostgreSQL was chosen as the data store because SQL databases are more widely known than NoSQL, so it should be easier for anyone to understand the design. It was chosen because of its current popularity and the authors' preference for it over MySQL.
 \begin{figure}
@@ -126,7 +126,7 @@ Each microservice encapsulates its own data. The database tables are the same as
     \centering
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includesvg[width=0.9\textwidth]{images/monolith_package.svg}
+        \includesvg[width=0.95\textwidth]{images/monolith_package.svg}
         \caption{Internal package structure of Monolith example. \label{img:monolith_package}}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}

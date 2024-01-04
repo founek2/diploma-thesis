@@ -58,11 +58,11 @@ Finding the right size of microservices is a difficult task. In this project, th
 
 \begin{itemize}
     % TODO add more examples
-    \item \it{Financial Account} holds information about bank accounts for users. Either manually created accounts or those that are connected with bank.
-    \item \it{Transaction} stores financial transactions.
-    \item \it{Categorisation} contains pure logic that categorises transactions into different categories.
-    \item \it{Orchestrator} is used for scheduled tasks that trigger complex flows involving multiple microservices, such as updating cached accounts and Open Banking transactions, and starts the post-processing.
-    \item \it{Advisor} was designed to hold the logic and data around advisors and their relationship with users. Later, chat functionality was added, and as it started with just basic messaging between advisors and users, the unfortunate decision was made to include everything around messaging here as well. Over time, this functionality has been extended and this microservice has become the most bloated of all.
+    \item \textit{Financial Account} holds information about bank accounts for users. Either manually created accounts or those that are connected with bank.
+    \item \textit{Transaction} stores financial transactions.
+    \item \textit{Categorisation} contains pure logic that categorises transactions into different categories.
+    \item \textit{Orchestrator} is used for scheduled tasks that trigger complex flows involving multiple microservices, such as updating cached accounts and Open Banking transactions, and starts the post-processing.
+    \item \textit{Advisor} was designed to hold the logic and data around advisors and their relationship with users. Later, chat functionality was added, and as it started with just basic messaging between advisors and users, the unfortunate decision was made to include everything around messaging here as well. Over time, this functionality has been extended and this microservice has become the most bloated of all.
 \end{itemize}
 
 From the examples above, it is clear that microservices have varying scopes/boundaries. Even if we have the best possible design at the start, over time, features will change and this will inevitably lead to an uneven distribution of boundaries. This does not mean that there is a problem with the design, as our system might just be adapting to our changing business needs, shifting goals, and our design needs to adapt as well. There are usually two outcomes. The first is a proper adaptation of the design, once we realise that the change is needed, and with it a possible refactoring/split/merge of microservices. The second option is what happened to the Advisor service. Over time, it took on more and more functionality, even outside its scope, and when someone later realised the mistake, the amount of work required to make the necessary changes was simply too much to invest at the time.
