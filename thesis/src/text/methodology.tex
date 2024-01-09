@@ -3,25 +3,26 @@ If you are building an application from scratch, or just looking for a flexible 
 
 \begin{enumerate}
     \item \textbf{Modularization} - take the whole business domain and start dividing it into smaller parts until you reach single business responsibility per part. For each part properly define the scope and boundaries. Modeling around business domain has proven for Microservices to be the best approach\cite{BUILDING_MS_WHAT_ARE}, and it can easily be applied for Moduliths as well. This step usually impossible to get right the first time, so it is a more iterative process.
-    \item Create module for each defined part from previous step and expose its functionality over interface.
-    \item Module can use other modules' functionality via defined interface.
-    \item Build the Modulith application.
-    \item Prepare application to scale as a unit (see Figure~\ref{fig:scale_as_unit}) - running in multiple instances is usually required for high availability and better performance.
-    \item If deployment is slow or process too complex, you can deploy modules individually (more about deployment at bottom of section~\ref{section:modulith}).
-    \item If performance is an issue, utilize Hybrid Modulith architecture. This should be implemented with caution, as it may not even be needed as long as the scalability achieved by the previous step is sufficient. See section~\ref{subsection:modulith_to_hybrid_modulith} for more details.
+    \item Create module for each defined part from previous step and expose its functionality over interface or messaging system.
+    % \item Module can use other modules' functionality via defined interface.
+    % \item Build the Modulith application 
+    \item Start composing modules to build the desired business logic resulting in Modulith architecture. The composition is done either by depending on exposed modules' interface or via external messaging system to keep the coupling as low as possible.
+    \item Prepare the application to scale as a unit (see Figure~\ref{fig:scale_as_unit}). Running it in multiple instances is required to increase performance through horizontal scaling or to increase availability. For a successful transition, the application must be stateless, and at this point there may be issues with synchronisation and parallel access, so be sure to test it thoroughly under load.
+    \item If deployment is slow or deployment process too complex, deploy modules individually (more about deployment at bottom of section~\ref{section:modulith}).
+    \item If performance is an issue, utilize Hybrid Modulith architecture to scale individual modules independently. This should be implemented with caution, as it may not even be needed as long as the scalability achieved by the previous steps is sufficient. See section~\ref{subsection:modulith_to_hybrid_modulith} for more details.
         
           % \item *Optional* Identify modules having performance issues and move them into independent service (another Modulith).
           % \item Scale the independent Moduliths as required.
           % \item In case of need for additional granularity migrate to Microservices architecture.
-    \item Enforce module boundaries during whole application lifecycle and adapt them as business needs change.
-    \item If needed, Modulith can be easily converted into Microservices, see section~\ref{subsection:modulith_to_microservices}.
+    \item Enforce module boundaries throughout the application lifecycle and adapt them as business needs change. Failure to enforce boundaries leads to increasing module size and complexity, which inevitably slows the pace of development.
+    \item If there is a good reason, Modulith can be easily converted into Microservices, see section~\ref{subsection:modulith_to_microservices}.
     \begin{itemize}
-        \item Once the need for Microservices subside, it can be easily converted back to Modulith, see section~\ref{subsection:microservices_to_modulith}
+        \item Once the need for Microservices subside, it can be converted back to Modulith, see section~\ref{subsection:microservices_to_modulith}
     \end{itemize}
 \end{enumerate}
 
 \begin{note}
-    For additional arguments in favour of Modulith over Microservices, please refer to Section~\ref{section:building_new_app}.
+    In the case of existing monolithic applications, they can be iteratively converted to a Modulith architecture rather than completely rewritten as with microservices, see section~\ref{subsection:monolith_to_modulith} for more details.
 \end{note}
 
 % \section{Decision making}
