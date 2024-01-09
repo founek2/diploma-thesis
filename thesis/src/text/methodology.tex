@@ -24,34 +24,34 @@ If you are building an application from scratch, or just looking for a flexible 
     For additional arguments in favour of Modulith over Microservices, please refer to Section~\ref{section:building_new_app}.
 \end{note}
 
-\section{Decision making}
-Every software project consists of at least 6 phases: planning, design, development, testing, deployment and maintenance. We will mainly be discussing the first two: planning and design, because this is where the high-level decision about the architecture is made. Ideally, a software architect creates the concepts and designs for software and helps to turn those concepts into plans, just as an architect designs buildings. In smaller projects, the role of software architect will usually fall to the most experienced developer. While building architects are not usually concerned with how their ideas are implemented, a software architect is involved in all stages of the development process, not just the architecture, but any high-level decisions about the tools, coding standards or platforms to be used.
+% \section{Decision making}
+% Every software project consists of at least 6 phases: planning, design, development, testing, deployment and maintenance. We will mainly be discussing the first two: planning and design, because this is where the high-level decision about the architecture is made. Ideally, a software architect creates the concepts and designs for software and helps to turn those concepts into plans, just as an architect designs buildings. In smaller projects, the role of software architect will usually fall to the most experienced developer. While building architects are not usually concerned with how their ideas are implemented, a software architect is involved in all stages of the development process, not just the architecture, but any high-level decisions about the tools, coding standards or platforms to be used.
 
-The architecture of the system is probably the most important decision to be made, as it influences all subsequent stages of development and is usually quite difficult to change afterwards. Interestingly, the choice of architecture is not just about meeting all the requirements of the project, but it must also fit the style of the organisation. There is an IT theory created by computer scientist/programmer Melvin Conway in 1967 which states: ``Organisations that design systems are forced to produce designs that are copies of the communication structures of those organisations.''\cite{paper:conway:1968}. And that theory makes a lot of sense. When we have to make a difficult decision, we are always more likely to choose something we know well rather than something that might be better but with which we have no experience. Also, not all designs might be compatible with our organisational structure. For example, a monolith with a 4-month release cycle won't work for an early-stage startup where they're adding new features to their product every week and working in short iteration cycles. The same is true vice versa. Having a microservices architecture, fast iteration cycles and the ability to deploy whenever a feature is ready is great, but when applied in an organisation with a complex hierarchical structure, where simple changes take weeks to get approved, it does not even remotely exploit the benefits the architecture has to offer.
+% The architecture of the system is probably the most important decision to be made, as it influences all subsequent stages of development and is usually quite difficult to change afterwards. Interestingly, the choice of architecture is not just about meeting all the requirements of the project, but it must also fit the style of the organisation. There is an IT theory created by computer scientist/programmer Melvin Conway in 1967 which states: ``Organisations that design systems are forced to produce designs that are copies of the communication structures of those organisations.''\cite{paper:conway:1968}. And that theory makes a lot of sense. When we have to make a difficult decision, we are always more likely to choose something we know well rather than something that might be better but with which we have no experience. Also, not all designs might be compatible with our organisational structure. For example, a monolith with a 4-month release cycle won't work for an early-stage startup where they're adding new features to their product every week and working in short iteration cycles. The same is true vice versa. Having a microservices architecture, fast iteration cycles and the ability to deploy whenever a feature is ready is great, but when applied in an organisation with a complex hierarchical structure, where simple changes take weeks to get approved, it does not even remotely exploit the benefits the architecture has to offer.
 
-The importance of choosing the right architecture for many software projects is underestimated and influenced by new shiny trends and fancy words in the IT industry instead of being driven primarily by requirements, which can lead to unstable, inefficient and overpriced projects.
+% The importance of choosing the right architecture for many software projects is underestimated and influenced by new shiny trends and fancy words in the IT industry instead of being driven primarily by requirements, which can lead to unstable, inefficient and overpriced projects.
 
-\subsection{Choosing right criteria}
-To ensure that the chosen software architecture meets the needs of the software to be developed, it is very important that the architect fully grasps and understands the business needs that will be served. These should be understood as much as the technical and functional expectations of the application. The general aspects to consider:
-\begin{itemize}
-    \item Security and performance requirements
-    \item Client and vendor expectations
-    \item The type of hosting
-    \item Technologies
-\end{itemize}
+% \subsection{Choosing right criteria}
+% To ensure that the chosen software architecture meets the needs of the software to be developed, it is very important that the architect fully grasps and understands the business needs that will be served. These should be understood as much as the technical and functional expectations of the application. The general aspects to consider:
+% \begin{itemize}
+%     \item Security and performance requirements
+%     \item Client and vendor expectations
+%     \item The type of hosting
+%     \item Technologies
+% \end{itemize}
 
-To produce good requirements, you need to answer as many questions as possible. It is essential that all requirements are as specific and concrete as possible. Having vague and unachievable requirements is almost as good as having none at all. It's not enough to say performance, portability or scalability. No project can have perfect performance. It must be properly specified, and also limited so that other requirements can be met as well\cite{REQUIREMENTS_LIMITED}.
-% TODO přidat diagram x dimenzí a že nelze každou mít na 100, ale je třeba kompromisů - fancy diagram nevím jak se jim žíká
+% To produce good requirements, you need to answer as many questions as possible. It is essential that all requirements are as specific and concrete as possible. Having vague and unachievable requirements is almost as good as having none at all. It's not enough to say performance, portability or scalability. No project can have perfect performance. It must be properly specified, and also limited so that other requirements can be met as well\cite{REQUIREMENTS_LIMITED}.
+% % TODO přidat diagram x dimenzí a že nelze každou mít na 100, ale je třeba kompromisů - fancy diagram nevím jak se jim žíká
 
-Requirements generally fall into two categories:
-\begin{itemize}
-    \item \textbf{Functional requirements} describe what a system must do. If the system does not meet the functional requirements, it will fail. This is because it is unable to do something it needs to do to work properly. Another way of looking at functional requirements is in terms of inputs and outputs: they specify what the system must do in response to different inputs, and what it must output.
-    \item \textbf{Non-functional requirements} describe how the system works. They focus on how the system delivers the specified functionality. At first glance they may seem less important than functional requirements, but they are both important. Non-functional requirements do not affect the functionality of the system, but they do affect how well it performs.
-\end{itemize}
+% Requirements generally fall into two categories:
+% \begin{itemize}
+%     \item \textbf{Functional requirements} describe what a system must do. If the system does not meet the functional requirements, it will fail. This is because it is unable to do something it needs to do to work properly. Another way of looking at functional requirements is in terms of inputs and outputs: they specify what the system must do in response to different inputs, and what it must output.
+%     \item \textbf{Non-functional requirements} describe how the system works. They focus on how the system delivers the specified functionality. At first glance they may seem less important than functional requirements, but they are both important. Non-functional requirements do not affect the functionality of the system, but they do affect how well it performs.
+% \end{itemize}
 
-Another thing that can influence the decision is the experience of the team. If we have a team of developers with a lot of experience in building monoliths and no experience with distributed systems, choosing microservice architecture as a starting point may turn out to be a decision we will regret. Microservices require a completely different mindset to the one the team was used to when building monoliths. And we could easily end up with \textit{Distributed Monolith} that should be avoided at all costs.
+% Another thing that can influence the decision is the experience of the team. If we have a team of developers with a lot of experience in building monoliths and no experience with distributed systems, choosing microservice architecture as a starting point may turn out to be a decision we will regret. Microservices require a completely different mindset to the one the team was used to when building monoliths. And we could easily end up with \textit{Distributed Monolith} that should be avoided at all costs.
 
-\section{Building a new application}
+\section{Why Modulith over Microservices}
 \label{section:building_new_app}
 If you are building an application from the ground up, I strongly believe the Modulith is currently the best choice for majority of projects. See Table~\ref{table:architecture_compare} with architecture summary in the first chapter, based on which the Modulith has the best qualities from both architectures Monolith and Microservices. 
 
@@ -155,7 +155,7 @@ The migration is easily done by converting microservices to modules as shown in 
     \caption{Conversion step from Microservices to Modulith.\label{fig:microservices_to_modulith_steps}}
 \end{figure}
 
-
+% \clearpage
 \section{Summary}
 The modular architecture methodology has been created as a step-by-step guide for new projects based on Modulith architecture. It defines how the business domain should be divided to modularise the application, how it should communicate internally to keep coupling low, and how it should evolve over time to increase performance and scalability. Each architecture step is detailed and illustrated with diagrams. The flexibility of Modulith even allows for a smooth transition back and forth between microservices and the said architecture.
 
