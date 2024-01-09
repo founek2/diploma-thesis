@@ -1,12 +1,27 @@
-\chapter{Contents of the attached media}
-
+\chapter{Attached media contents}
 
 \dirtree{%
-	.1 readme.txt\DTcomment{stručný popis obsahu média}.
-	.1 exe\DTcomment{adresář se spustitelnou formou implementace}.
-	.1 src.
-	.2 impl\DTcomment{zdrojové kódy implementace}.
-	.2 thesis\DTcomment{zdrojová forma práce ve formátu \LaTeX{}}.
-	.1 text\DTcomment{text práce}.
-	.2 thesis.pdf\DTcomment{text práce ve formátu PDF}.
+	.1 README.md\DTcomment{brief description of the content of the media}.
+	.1 golang\DTcomment{directory of Golang implementation and benchmarks}.
+	.2 benchmark\DTcomment{directory containing benchmark scenarios and results}.
+	.3 diff.sh\DTcomment{helper to extract data from benchmark results}.
+	.3 diff\_latency.sh\DTcomment{helper to extract data from benchmark results}.
+	.3 results\DTcomment{benchmark results for performance scenario}.
+	.3 results-latency\DTcomment{benchmark results for latency scenario}.
+	.3 run.sh\DTcomment{script to run benchmark for performance scenario}.
+	.3 latency\_run.sh\DTcomment{script to run benchmark for latency scenario}.
+	.3 src\DTcomment{JavaScript scenario definition for K6 tool}.
+	.2 docker\DTcomment{docker-compose definitions for all variations of applications}.
+	.3 microservices.
+	.3 microservices-no-db.
+	.3 modulith.
+	.3 modulith-no-db.
+	.3 monolith.
+	.2 server-microservices\DTcomment{microservices app implementation}.
+	.2 server-microservices-no-db\DTcomment{microservices app implementation (DB replaced by sleep)}.
+	.2 server-modulith\DTcomment{modulith app implementation}.
+	.2 server-modulith-no-db \DTcomment{modulith app implementation (DB replaced by sleep)}.
+	.2 server-monolith \DTcomment{ monolith app implementation}.
+	.1 thesis\DTcomment{source form of thesis in format \LaTeX{}}.
+	.1 thesis.pdf\DTcomment{thesis in format pdf}.
 }
