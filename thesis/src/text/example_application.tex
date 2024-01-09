@@ -4,7 +4,7 @@
 % Performance testing +monolith
 % https://ieeexplore.ieee.org/abstract/document/9109514
 
-So far we have looked at three different types of architectural patterns. In this chapater we will look at the implementation of a simple application using all 3 architectural patterns discussed (Monolith, Mudulith, Microservice). We will look at the implications in terms of internal structure, database design, scalability and of course performance.
+So far, three different types of architectural patterns have been introduced. In this chapter I will create an implementation of a simple application using all 3 architectural patterns discussed (Monolith, Mudulith, Microservice). I will describe the architectural implications in terms of internal structure, database design, scalability and thoroughly measure performance of every application.
 
 \section{Application}
 This is an application example of a real world system consisting of HTTP API, database queries and business logic. It has been designed to be easy to understand and to solve a problem known to everyone: orders. Each application exposes the following HTTP API:
@@ -23,9 +23,9 @@ This is an application example of a real world system consisting of HTTP API, da
 
 The Client of the application can view items, add them to his shopping cart, place an order, retrieve an invoice and pay for it. Like most of the applications today, there are mainly operations querying data or saving data into database. The activity flow is described on Figure~\ref{img:app_activity_flow}. First, a session is created for the client, then the client loads items and adds everything he wants to his shopping cart. Later the client places an order, an invoice is generated in the background and the client can cancel the order or pay for it. To add more CPU intensive tasks, invoice generates PDF and also calculates 41st Fibonacci number.
 
-Candidates for the implementation programming language were Rust and Golang due to its minimal runtime (minimal impact on benchmarking). Winner is Golang because it's easier to use, good personal experience of the author and better support for the Open Tracing project, which is used for monitoring from within the application during benchmarking. All applications are based on \textit{gorilla/mux} \cite{MUX} for http server + request routing library and \textit{Bun} \cite{BUN} as a lightweight ORM.
+Candidates for the implementation language were Rust and Golang due to its minimal runtime (minimal impact on benchmarking). The winner is Golang because it's easier to use, I have good personal experience with it, and it has better support for the Open Tracing project, which is used for monitoring from within the application during benchmarking. All applications are based on \textit{gorilla/mux} \cite{MUX} for http server + request routing library and \textit{Bun} \cite{BUN} as a lightweight ORM.
 
-PostgreSQL was chosen as the data store because SQL databases are more widely known than NoSQL, so it should be easier for anyone to understand the design. It was chosen because of its current popularity and the authors' preference for it over MySQL.
+PostgreSQL was chosen as the data store because SQL databases are more widely known than NoSQL, so it should be easier for anyone to understand the design. It was chosen because of its current popularity and my preference over MySQL.
 \begin{figure}
     \centering
     \includesvg{images/app_activity.svg}

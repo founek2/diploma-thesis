@@ -1,6 +1,6 @@
 
 \section{Benchmark methodology}
-There are two types of scenarios, which will be measured to get inside into bottlenecks of applications from both CPU intensive and IO intensive perspective. Benchmarking will be done using K6 load testing tool, which will act as HTTP client sending requests defined by scenario.
+There are two types of scenarios that will be measured to get inside the bottlenecks of applications from both CPU intensive and IO intensive perspective. The benchmarking is performed using the K6 load testing tool, which acts as an HTTP client sending requests defined by the scenario.
 
 Benchmarking will be done for following test scenarios with various configurations:
 \begin{itemize}
@@ -8,7 +8,7 @@ Benchmarking will be done for following test scenarios with various configuratio
     \item Latency scenario - focusing primarily on IO operations and handling a lot of fast requests.
 \end{itemize}
 
-All benchmarks results will originate from running 10 parallel tests, totally 100 iterations with following configuration.
+All benchmarks results will originate from running 10 parallel tests, each 100 iterations with following configuration.
 \begin{itemize}
     \item Golang 1.21.3 - programming language used for applications
     \item PostgreSQL 14 - database
@@ -25,7 +25,7 @@ All benchmarks results will originate from running 10 parallel tests, totally 10
 \label{section:benchmark_results}
 
 \subsection{Performance scenario}
-The first scenario consists of going through the whole application flow as defined on Figure~\ref{img:benchmark_flow}, which should represent evenly distributed load on the whole system. Client load list of houndred items and adds one random into his shopping cart. This repeats 10 times, after that client creates order, retrieves invoice information and pays for it. The application cosists of database queries and two harder jobs, which represents possible real world task. The first is CPU intensive task will be done during creation of order, where application generates PDF and also calculates 41st Fibonacci number to add more cpu load. The second big task, which represents waiting for 3rd party service is done during handling payment, which is implemented as 500~ms sleep.
+The first scenario consists of going through the whole application flow as defined on Figure~\ref{img:benchmark_flow}, which should represent evenly distributed load on the whole system. Client load list of hundred items and adds one random into his shopping cart. This repeats 10 times, after that client creates order, retrieves invoice information and pays for it. The application consists of database queries and two harder jobs, which represents possible real world task. The first is CPU intensive task will be done during creation of order, where application generates PDF and also calculates 41st Fibonacci number to add more cpu load. The second big task, which represents waiting for 3rd party service is done during handling payment, which is implemented as 500~ms sleep.
 
 \begin{figure}
     \centering
@@ -50,9 +50,9 @@ In Table \ref{table:benchmark_baseline} are results of benchmark which will act 
     \caption{Table containing benchmark results comparing Monolith, Modulith and Microservices. Microservices and much more CPU reserved, since it consist of 5 services (every singe one has 0.5~CPU assigned).\label{table:benchmark_baseline}}
 \end{table}
 
-The biggest bottleneck of first scenario is CPU bound task. To scale Monolith we would have to run more instances, which for big systems is very resource demanding, and target of this theses is to focus on more modern architecture styles, so it will not be discussed further. On the other hand for modulith systems it is much easier due to its modular structure. The cpu bound task is contained inside invoice package, which can be moved into separate lightweight service and scaled as much as wanted.
+The biggest bottleneck of the first scenario is the CPU-bound task. To scale monolith it would have to run in more instances, which is very resource intensive for large systems, and the aim of this thesis is to focus on more modern architectural styles, so it will not be discussed further. On the other hand, for Modulith systems it is much simpler due to its modular structure. The CPU-bound tasks are contained in the invoice package, which can be moved to a separate lightweight service and scaled as desired.
 
-In second measurement invoice package was moved into separated service implementing HTTP server. HTTP client is than passed in main server to whoever module required the invoice interface. The same benchmark was run for one, two, four and eight instances of invoice service and results can be seen in Table~\ref{table:benchmark_modulith_instances} along with scaled Microservices example. There is no difference between Modulith and Modulith with single invoice service instance, but having the invoice service scaled to two instances, it has more then doubled the speed. Adding more instances scales linearly until the main bottleneck becomes IO bound task during payment. Microservices scale as well as Modulith, but having more overhead (more network inter-service communication) they are slightly slower.
+In second measurement the invoice package was moved into separated service implementing HTTP server. HTTP client is than passed in main server to whoever module required the invoice interface. The same benchmark was run for one, two, four and eight instances of invoice service and results can be seen in Table~\ref{table:benchmark_modulith_instances} along with scaled Microservices example. There is no difference between Modulith and Modulith with single invoice service instance, but having the invoice service scaled to two instances, it has more than doubled the speed. Adding more instances scales linearly until the main bottleneck becomes IO bound task during payment. Microservices scale as well as Modulith, but having more overhead (more network inter-service communication) they are slightly slower.
 
 \begin{table}
     \begin{tabular}{ |p{4cm}||p{1.6cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}| }
